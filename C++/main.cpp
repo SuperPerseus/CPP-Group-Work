@@ -2,8 +2,9 @@
 #include"include.h"
 
 int main() {
-    User u("tom","123","customer");
-    u = leading();
-
-
+    Login logorregister;
+    cout << logorregister.returnToken();
+    cout << (logorregister.returnuser())->id()<<endl;
+    cout << (logorregister.returnuser())->returnname() << endl;
+    return 0;
 }
