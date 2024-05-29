@@ -1,7 +1,4 @@
 #pragma once
-#include<iostream>
-#include<string>
-
 #include"include.h"
 
 class Reserve {//Ô¤¶©Æ±

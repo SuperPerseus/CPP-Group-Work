@@ -5,11 +5,10 @@ using namespace std;
 
 class User {
 protected:
-
+    string username;
     string password;
     string userType;
-public:
-    string username;
+public:   
     User(string username = "defaultUsername", string password = "defaultPassword", string userType = "None")
         : username(username), password(password), userType(userType) {}
     ~User() {};
