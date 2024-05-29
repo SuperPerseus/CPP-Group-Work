@@ -1,6 +1,4 @@
 #pragma once
-#include<iostream>
-#include<string>
 #include"user.h"
 #include"login.h"
 #include"customer.h"

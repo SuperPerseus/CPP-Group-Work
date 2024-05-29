@@ -1,44 +1,52 @@
 #pragma once
-#include <string>
+#include"include.h"
+
+using namespace std;
 
 class User {
 protected:
-    std::string password;
-    std::string userType;
+
+    string password;
+    string userType;
 public:
-    std::string username;
-    User(std::string username = "defaultUsername", std::string password = "defaultPassword", std::string userType = "None");
-    virtual ~User();
-    bool login();
-    void logout();
+    string username;
+    User(string username = "defaultUsername", string password = "defaultPassword", string userType = "None")
+        : username(username), password(password), userType(userType) {}
+    ~User() {};
+    bool login() {}
+    void logout() {}
 };
 
-class Customer : public User {
+class Customer :User {
 public:
     int customerId;
-    std::string ticketProfile;
-    std::string userType = "cus";
+    string ticketProfile;
+    string userType = "cus";
 
-    Customer(std::string username, std::string password, int customerId);
-    ~Customer();
-    void book();
-    void ticket();
+    Customer(string username, string password, int customerId)
+        : User(username, password, userType), customerId(customerId) {}
+    ~Customer() {};
+    void book() {};
+    void ticket() {};
 };
 
-class Team : public User {
+
+class Team :User {
 public:
     int teamId;
-    std::string userType = "tea";
-    Team(std::string username, std::string password, int teamId);
-    ~Team();
-    void view();
+    string userType = "tea";
+    Team(string username, string password, int teamId)
+        : User(username, password, userType), teamId(teamId) {}
+    ~Team() {};
+    void view() {};
 };
 
-class Manager : public User {
+class Manager :User {
 public:
     int managerId;
-    std::string userType = "man";
-    Manager(std::string username, std::string password, int managerId);
-    ~Manager();
-    void seatManage();
+    string userType = "man";
+    Manager(string username, string password, int managerId)
+        : User(username, password, userType), managerId(managerId) {}
+    ~Manager() {};
+    void seatManage() {};
 };
