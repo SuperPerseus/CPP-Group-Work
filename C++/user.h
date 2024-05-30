@@ -8,36 +8,30 @@ public:
     string username;
     string password;
     string userType;
-    User(string username = "defaultUsername", string password = "defaultPassword", string userType = "None")
-        : username(username), password(password), userType(userType) {}
+    string id;
+    User(string username = "defaultUsername", string password = "defaultPassword", string userType = "None",string id="000000000")
+        : username(username), password(password), userType(userType),id(id) {}
 
-    virtual ~User() {};    // 析构函数应为虚函数
-
+    virtual ~User() {};
     virtual string returnname() { return username; }
     virtual string returnpassword() { return password; }
     virtual string returntype() { return userType; }
+    virtual string returnid() { return 0; }
     virtual bool login() { return false; }
     virtual void logout() {}
-    virtual string id() { return 0; }
 };
 
 class Customer : public User {
 public:
-    string customerId;
     string ticketProfile;
 
     Customer(string username, string password, string userType, string customerId)
-        : User(username, password, userType), customerId(customerId) {}
-
+        : User(username, password, userType, customerId) {}
+    Customer(const User *user):User(*user){}
     ~Customer() {}
 
     void book() {}
     void ticket() {}
-
-    string id() override {
-        return customerId;
-    }
-
     string returnname() override {
         return username;
     }
@@ -49,19 +43,19 @@ public:
     string returntype() override {
         return userType;
     }
+    string returnid() override {
+        return id;
+    }
 };
 
 
 class Team :public User {
 public:
-    string teamId;
     Team(string username, string password, string userType,string teamId)
-        : User(username, password, userType), teamId(teamId) {}
+        : User(username, password, userType, teamId) {}
+    Team(const User *user) :User(*user) {}
     ~Team() {};
     void view() {};
-    string id() {
-        return teamId;
-    }
     string returnname() {
         return username;
     }
@@ -71,18 +65,18 @@ public:
     string returntype() {
         return userType;
     }
+    string returnid() {
+        return id;
+    }
 };
 
 class Manager :public User {
 public:
-    string managerId;
     Manager(string username, string password, string userType, string managerId)
-        : User(username, password, userType), managerId(managerId) {}
+        : User(username, password, userType, managerId) {}
+    Manager(const User *user) :User(*user) {}
     ~Manager() {};
     void seatManage() {};
-    string id() {
-        return managerId;
-    }
     string returnname() {
         cout << "return name " << endl;
         return username;
@@ -92,5 +86,8 @@ public:
     }
     string returntype() {
         return userType;
+    }
+    string returnid() {
+        return id;
     }
 };

@@ -30,3 +30,13 @@ public:
     SeatManagement();
     ~SeatManagement();
 };
+
+class Backend {
+private:
+    Manager user;
+public:
+    Backend(User *input) :user(input){};
+    Manager returnuser() {
+        return user;
+    }
+};

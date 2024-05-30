@@ -18,7 +18,7 @@ public:
     void success() {
         loginsuccess = true;
     }
-    void tokencheck() {
+    void tokencheck() {//再加入一个用户名SHA加分别加上id和type的SHA来保密，防止权限泄露
         administratorToken = true;
     }
     void userload(string username,string password,string id,string type ) {
@@ -149,14 +149,22 @@ public:
                 break; // Valid password, exit loop.
             }
         } while (true);
-
+        bool idcheck=true;
         do {
-            cout << "Enter your id: ";
-            cin >> id;
-            for (const auto value : users) {
-                if (id == get<1>(value.second)) {
-                    cout << "the is is existing,enter again" << endl;
-                    continue;
+            while (idcheck == true) {
+                cout << "Enter your id: ";
+                cin >> id;
+                for (const auto value : users) {
+                    if (id == get<1>(value.second)) {
+                        cout << "the is is existing,enter again" << endl;
+                        idcheck = false;
+                    }
+                }
+                if (idcheck == true) {
+                    break;
+                }
+                else {
+                    idcheck = true;
                 }
             }
             cout << "the id no existing,accept" << endl;
@@ -261,4 +269,3 @@ public:
 
     }
 };
-

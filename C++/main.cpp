@@ -3,8 +3,20 @@
 
 int main() {
     Login logorregister;
-    cout << logorregister.returnToken() << endl;
-    cout << (logorregister.returnuser())->id()<<endl;
-    cout << (logorregister.returnuser())->returnname() << endl;
+    //cout << "the token is " << logorregister.returnToken() << endl;
+    //cout << "the id is " << (logorregister.returnuser())->returnid() << endl;
+    File file;
+    switch (stoi((logorregister.returnuser())->returntype())) {
+    case 1:
+
+        break;
+    case 2:
+        break;
+    case 3:
+        Backend bk(logorregister.returnuser());
+        cout << bk.returnuser().returnid() << endl;
+        break;
+
+    }
     return 0;
 }
