@@ -10,7 +10,7 @@ private:
     bool administratorToken=false;
 
 public:
-    User *user;
+    User *log,*user;
     Login() {
         leading();
     };
@@ -23,13 +23,14 @@ public:
     }
     void userload(string username,string password,string id,string type ) {
         if (stoi(type) == 1) {
-            User* user = new Customer(username, password, type, id);
+            user = new Customer(username, password, type, id);
+
         }
         else if (stoi(type) == 2) {
-            User* user = new Team(username, password, type, id);
+            user = new Team(username, password, type, id);
         }
         else if (stoi(type) == 3) {
-            User* user = new Manager(username, password, type, id);
+            user = new Manager(username, password, type, id);
         }
         else {
             cout << "unknown error ,exit with code 100" << endl;
@@ -37,7 +38,8 @@ public:
         }
     }
     User *returnuser() {
-        return user;
+        log = user;
+        return log;
     };
     bool returnToken() {
         return administratorToken;
@@ -152,7 +154,7 @@ public:
             cout << "Enter your id: ";
             cin >> id;
             for (const auto value : users) {
-                if ((hashPassword(id)) == get<1>(value.second)) {
+                if (id == get<1>(value.second)) {
                     cout << "the is is existing,enter again" << endl;
                     continue;
                 }
@@ -171,9 +173,8 @@ public:
 
         string hashedUsername = hashPassword(username);
         string hashedPassword = hashPassword(password);
-        string hashedid = hashPassword(id);
-        users[hashedUsername] = make_tuple(hashedPassword, hashedid, type);
-        saveUser(hashedUsername, hashedPassword, hashedid, type);
+        users[hashedUsername] = make_tuple(hashedPassword, id, type);
+        saveUser(hashedUsername, hashedPassword, id, type);
         cout << "User registered successfully!\n";
     }
 
@@ -246,6 +247,7 @@ public:
                 loginUser(users);
                 if (returnloginstate() == true) {
                     exitProgram = true;
+
                 }
                 break;
             case 0:
