@@ -100,7 +100,7 @@ public:
         }
         else {
             std::cout << "The file cannot be opened or created.\n";
-            return false;
+            exit(104);
         }
 
         return true;

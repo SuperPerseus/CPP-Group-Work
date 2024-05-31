@@ -5,7 +5,7 @@ int main() {
     Login logorregister;
     //cout << "the token is " << logorregister.returnToken() << endl;
     //cout << "the id is " << (logorregister.returnuser())->returnid() << endl;
-    File file;
+    
     switch (stoi((logorregister.returnuser())->returntype())) {
     case 1:
 

@@ -3,7 +3,7 @@
 /*
     ticketfile format: <match_time> id seatgrade location paytime paycost 
     seatfile format: <match_time> seatgrade[dia,pt,au,ag,cu,fe] gradetotalseat[1:] value[] 
-    teamfile format: <match_time> team[2] 
+    teamfile format: <match_time> team[0] team[1] 
 */
 
 struct timecompare {
@@ -36,16 +36,16 @@ struct teaminfomation {
     string teamid[2];
 };
 
-class tickets {
-public:
-    priority_queue<string, vector<string>,timecompare> matchtime;//用比赛时间排序
-    unordered_map<string, vector<ticketinfomation>> id;//用比赛时间搜索关联下的所有票务信息
-};
-
 class seats {
 public:
     priority_queue<string, vector<string>, timecompare> matchtime;
     unordered_map<string, vector<seatinfomation>> setseat;
+};
+
+class tickets {
+public:
+    priority_queue<string, vector<string>,timecompare> matchtime;//用比赛时间排序
+    unordered_map<string, vector<ticketinfomation>> id;//用比赛时间搜索关联下的所有票务信息
 };
 
 class teams {
@@ -56,40 +56,92 @@ public:
 
 class File {
 private:
-    tickets tic;
     seats sea;
+    tickets tic;
+    teams tea;
     fstream filecache;//给notify用
 
 public:
     File() {
-        //加上查验token，如果没token，就不读取内置了
+        init();
+    };
+    ~File() {
+        bool successsave=savefile(sea, tic, tea);
+        if (successsave != true) {
+            std::cout << "file save error,exit with error code 103" << endl;
+            exit(103);
+        }
+        cout << "save file success" << endl;
+    };
+    void print() {
+        std::cout << tic.matchtime.top() << endl;
+    }
+    bool loadticket() ;
+    bool loadseat() ;
+    bool loadteam();
+    bool savefile(const seats& sea, const tickets& tic, const teams& tea);
+
+    void init() {
         if (loadseat()) {
             loadticket();
+            loadteam();
             print();
+            bool yes=savefile(sea, tic, tea);
         }
         else {
-            cout << "The file cannot be opened or created.\n";
-            cout << "exit with code 101" << endl;
-            exit(101);
+            std::cout << "The file cannot be opened or created.\n";
+            std::cout << "exit with code 104" << endl;
+            exit(104);
         }
-    };
-    ~File() {};
-    void print() {
-        cout << tic.matchtime.top() << endl;
     }
-    virtual bool loadticket() = 0;
-    virtual bool loadseat() = 0;
 
 };
+
+bool File::loadseat() {
+    fstream file;
+    file.open("seats.txt", fstream::in | fstream::out);
+    if (!file.is_open()) {
+        std::cout << "seat File does not exist, creating it.\n";
+        file.open("seats.txt", fstream::out);
+    }
+    else {
+        std::cout << "seat File already exists, loading ......\n";
+    }
+
+    string matchtime, seatgrade, gradetotalseat, value;
+    seatinfomation s;
+    if (file.is_open()) {
+
+        while (getline(file, matchtime)) {
+            getline(file, seatgrade);
+            getline(file, gradetotalseat);
+            getline(file, value);
+            s.matchtime = matchtime;
+            s.seatgrade = seatgrade;
+            s.gradetotalseat = stoi(gradetotalseat);
+            s.values[seatgrade] = value;
+            sea.matchtime.push(matchtime);
+            sea.setseat[matchtime].push_back(s);
+        }
+        file.close();
+    }
+    else {
+        return false;
+    }
+
+    return true;
+
+}
+
 bool File::loadticket() {
     fstream file;
     file.open("tickets.txt", fstream::in | fstream::out);
     if (!file.is_open()) {
-        cout << "tikect File does not exist, creating it.\n";
+        std::cout << "tikect File does not exist, creating it.\n";
         file.open("tickets.txt", fstream::out);
     }
     else {
-        cout << "tikect File already exists, loading ......\n";
+        std::cout << "tikect File already exists, loading ......\n";
     }
 
     string matchtime, id, seatgrade, location, paytime, paycost;
@@ -121,31 +173,30 @@ bool File::loadticket() {
     
 }
 
-bool File::loadseat() {
+bool File::loadteam() {
     fstream file;
-    file.open("seats.txt", fstream::in | fstream::out);
+    file.open("teams.txt", fstream::in | fstream::out);
     if (!file.is_open()) {
-        cout << "seat File does not exist, creating it.\n";
-        file.open("seats.txt", fstream::out);
+        std::cout << "team File does not exist, creating it.\n";
+        file.open("teams.txt", fstream::out);
     }
     else {
-        cout << "seat File already exists, loading ......\n";
+        std::cout << "team File already exists, loading ......\n";
     }
 
-    string matchtime,seatgrade, gradetotalseat,value;
-    seatinfomation s;
+    string matchtime;
+    string team[2];
+    teaminfomation t;
     if (file.is_open()) {
 
         while (getline(file, matchtime)) {
-            getline(file, seatgrade);
-            getline(file, gradetotalseat);
-            getline(file, value);
-            sea.matchtime.push(matchtime);
-            s.matchtime = matchtime;
-            s.seatgrade = seatgrade;
-            s.gradetotalseat = stoi(gradetotalseat);
-            s.values[seatgrade]=value;
-            sea.setseat[matchtime].push_back(s);
+            getline(file, team[0]);
+            getline(file, team[1]);
+            t.matchtime = matchtime;
+            t.teamid[0] = team[0];
+            t.teamid[1] = team[1];
+            tea.matchtime.push(matchtime);
+            tea.team[matchtime].push_back(t);
         }
         file.close();
     }
@@ -157,45 +208,107 @@ bool File::loadseat() {
 
 }
 
-
-void saveUser(const std::string& username, const std::string& hashedPassword, const std::string& id, const std::string& type) {
-    std::ofstream file("users.txt", std::ios::app);
+bool File::savefile(const seats& sea, const tickets& tic, const teams& tea) {
+    seats outseat=sea;
+    tickets outticket=tic;
+    teams outteam=tea;
+    bool writeseat = false, writeticket = false, writeteam=false;
+    ofstream file("seats.txt", ios::out | ios::trunc);
     if (!file.is_open()) {
-        std::cerr << "Failed to open users.txt for appending.\n";
-        return;
+        cerr << "Failed to open seats.txt for appending.\n";
+        exit(104);
     }
-    if (file.tellp() > 0) {
-        file << std::endl;
-    }
-    file << username << endl << hashedPassword << endl << id << endl << type << endl;
-}
+    string time;
+    seatinfomation seatitem;
+    while (!outseat.matchtime.empty()) {
+        time=outseat.matchtime.top();
+        outseat.matchtime.pop();
+        auto it = outseat.setseat.find(time);
+        if (it != outseat.setseat.end()) {
+            if (it->second.size() != 0) {
+                seatitem = it->second[0];
+                it->second.erase(it->second.begin());
 
-// Loads users from a file into a data //structure
-bool loadUsers(std::unordered_map<std::string, std::tuple<std::string, std::string, std::string>>& users) {
-    std::fstream file;
-    file.open("users.txt", std::fstream::in | std::fstream::out);
-    if (!file.is_open()) {
-        std::cout << "File does not exist, creating it.\n";
-        file.open("users.txt", std::fstream::out);
-    }
-    else {
-        std::cout << "File already exists, opening and moving the read pointer to the first position.\n";
-    }
-
-    if (file.is_open()) {
-        std::string username, password, id, type;
-        while (std::getline(file, username)) {
-            std::getline(file, password);
-            std::getline(file, id);
-            std::getline(file, type);
-            users[username] = make_tuple(password, id, type);
+                file << seatitem.matchtime << endl << seatitem.seatgrade << endl << seatitem.gradetotalseat << endl << seatitem.gradetotalseat << endl;
+            }
+            else {
+                std::cout << "in one matchtime,lose some seat record,error with code 106" << std::endl;
+                exit(106);
+            }
         }
-        file.close();
-    }
-    else {
-        std::cout << "The file cannot be opened or created.\n";
-        return false;
+        else {
+            std::cout << "matchtime is different with seat record,error with code 105" << std::endl;
+            exit(105);
+        }
     }
 
-    return true;
+    file.close();
+    writeseat = true;
+
+
+    ofstream ticketfile("tickets.txt", ios::out | ios::trunc);
+    if (!ticketfile.is_open()) {
+        cerr << "Failed to open tickets.txt for appending.\n";
+        exit(104);
+    }
+    ticketinfomation ticketitem;
+    while (!outticket.matchtime.empty()) {
+        time = outticket.matchtime.top();
+        outticket.matchtime.pop();
+        auto it = outticket.id.find(time);
+        if (it != outticket.id.end()) {
+            if (it->second.size() != 0) {
+                ticketitem = it->second[0];
+                it->second.erase(it->second.begin());
+
+                ticketfile << ticketitem.matchtime << endl << ticketitem.id << endl << ticketitem.seatgrade << endl << ticketitem.location << endl<< ticketitem.paytime<<endl<< ticketitem.paycost<<endl;
+            }
+            else {
+                std::cout << "in one matchtime,lose some seat record,error with code 106" << std::endl;
+                exit(106);
+            }
+        }
+        else {
+            std::cout << "matchtime is different with seat record,error with code 105" << std::endl;
+            exit(105);
+        }
+    }
+
+    ticketfile.close();
+    writeticket = true;
+
+
+
+    ofstream teamfile("teams.txt", ios::out | ios::trunc);
+    if (!teamfile.is_open()) {
+        cerr << "Failed to open tickets.txt for appending.\n";
+        exit(104);
+    }
+    teaminfomation teamitem;
+    while (!outteam.matchtime.empty()) {
+        time = outteam.matchtime.top();
+        outteam.matchtime.pop();
+        auto it = outteam.team.find(time);
+        if (it != outteam.team.end()) {
+            if (it->second.size() != 0) {
+                teamitem = it->second[0];
+                it->second.erase(it->second.begin());
+
+                teamfile << teamitem.matchtime << endl << teamitem.teamid[0] << teamitem.teamid[1] << endl;
+            }
+            else {
+                std::cout << "in one matchtime,lose some seat record,error with code 106" << std::endl;
+                exit(106);
+            }
+        }
+        else {
+            std::cout << "matchtime is different with seat record,error with code 105" << std::endl;
+            exit(105);
+        }
+    }
+
+    teamfile.close();
+    writeteam = true;
+
+    return (writeseat && writeteam && writeticket);
 }
