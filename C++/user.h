@@ -11,7 +11,7 @@ public:
     string id;
     User(string username = "defaultUsername", string password = "defaultPassword", string userType = "None",string id="000000000")
         : username(username), password(password), userType(userType),id(id) {}
-
+    User(const User* user) :User(*user) {};
     virtual ~User() {};
     virtual string returnname() { return username; }
     virtual string returnpassword() { return password; }
@@ -29,9 +29,10 @@ public:
         : User(username, password, userType, customerId) {}
     Customer(const User *user):User(*user){}
     ~Customer() {}
-
-    void book() {}
-    void ticket() {}
+    int wallet() {
+        int money;
+        return money;
+    }
     string returnname() override {
         return username;
     }

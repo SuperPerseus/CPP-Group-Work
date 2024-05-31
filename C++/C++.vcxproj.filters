@@ -30,7 +30,7 @@
     <ClInclude Include="team.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="manager.h">
+    <ClInclude Include="backend.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="file.h">
@@ -40,6 +40,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="errorcode.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="legalinput.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -11,6 +11,7 @@ struct timecompare {
         return a > b; 
     }
 };
+
 struct ticketinfomation {
 public:
     string matchtime;
@@ -55,18 +56,16 @@ public:
 };
 
 class File {
-private:
+public:
     seats sea;
     tickets tic;
     teams tea;
     fstream filecache;//¸ønotifyÓÃ
-
-public:
     File() {
         init();
     };
     ~File() {
-        bool successsave=savefile(sea, tic, tea);
+        bool successsave=savefile();
         if (successsave != true) {
             std::cout << "file save error,exit with error code 103" << endl;
             exit(103);
@@ -79,14 +78,14 @@ public:
     bool loadticket() ;
     bool loadseat() ;
     bool loadteam();
-    bool savefile(const seats& sea, const tickets& tic, const teams& tea);
+    bool savefile();
 
     void init() {
         if (loadseat()) {
             loadticket();
             loadteam();
             print();
-            bool yes=savefile(sea, tic, tea);
+            bool yes=savefile();
         }
         else {
             std::cout << "The file cannot be opened or created.\n";
@@ -208,7 +207,7 @@ bool File::loadteam() {
 
 }
 
-bool File::savefile(const seats& sea, const tickets& tic, const teams& tea) {
+bool File::savefile() {
     seats outseat=sea;
     tickets outticket=tic;
     teams outteam=tea;
