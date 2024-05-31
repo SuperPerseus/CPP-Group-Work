@@ -1,22 +1,24 @@
 #include"head.h"
 #include"include.h"
 
-int main() {
+int main() {//¼ÓµÇÂ¼¿ØÖÆ£¬ÊäÈë¼ì²â
     Login logorregister;
-    //cout << "the token is " << logorregister.returnToken() << endl;
-    //cout << "the id is " << (logorregister.returnuser())->returnid() << endl;
     
     switch (stoi((logorregister.returnuser())->returntype())) {
-    case 1:
-
-        break;
-    case 2:
-        break;
-    case 3:
-        Backend bk(logorregister.returnuser());
-        cout << bk.returnuser().returnid() << endl;
-        break;
-
+        case 1: {
+            
+            Server server(logorregister.returnuser());
+            server.menu();
+            break;
+        }
+        case 2: {
+            Backend bk(logorregister.returnuser());
+            break;
+        }           
+        case 3: {
+            Backend bk(logorregister.returnuser());
+            break;
+        }
     }
     return 0;
 }

@@ -223,7 +223,6 @@ public:
         }
         else if (stoi(std::get<2>(it->second)) == 2) {
             cout << "Your grade is team.\n";
-            tokencheck();
         }
         else {
             cout << "Your grade is administrater.\n";
@@ -232,7 +231,7 @@ public:
         cout << endl;
     }
 
-    void leading() {
+    void leading() {//加一个只有经理登录后，注册才开放23的权限
         std::unordered_map<std::string, std::tuple<std::string, std::string, std::string>> users;
         if (!loadUsers(users)) {
             cout << "Failed to load user data, exiting.\n";

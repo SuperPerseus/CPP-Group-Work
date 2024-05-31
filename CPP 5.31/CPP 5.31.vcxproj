@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{5e5e993b-4430-4414-88d4-8ba4f2d0c577}</ProjectGuid>
-    <RootNamespace>C</RootNamespace>
+    <ProjectGuid>{17de9073-81c1-48c7-8653-d2ea1e609682}</ProjectGuid>
+    <RootNamespace>CPP531</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -127,19 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="errorcode.h" />
-    <ClInclude Include="file.h" />
-    <ClInclude Include="head.h" />
-    <ClInclude Include="customer.h" />
-    <ClInclude Include="include.h" />
-    <ClInclude Include="legalinput.h" />
-    <ClInclude Include="login.h" />
-    <ClInclude Include="backend.h" />
-    <ClInclude Include="team.h" />
-    <ClInclude Include="user.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="FileName.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

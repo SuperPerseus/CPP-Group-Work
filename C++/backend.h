@@ -1,5 +1,8 @@
 #pragma once
-#include"include.h"
+#include "include.h"
+#include "head.h"
+
+
 
 class Notify {
 public:
@@ -9,11 +12,10 @@ public:
 
 class SeatAdd {
 public:
-    SeatAdd() {
-    
+    SeatAdd(){}
+    ~SeatAdd() {
     };
-    ~SeatAdd();
-    void xiugai() {
+    void add(File& file) {
         std::string matchtime, id, seatgrade, location, paytime, paycost;
         ticketinfomation t;
         std::cout << "请输入比赛时间: ";
@@ -35,15 +37,15 @@ public:
         std::cin >> paycost;
 
 
-        tic.matchtime.push(matchtime);
+        file.tic.matchtime.push(matchtime);
         t.matchtime = matchtime;
         t.id = id;
         t.seatgrade = seatgrade;
         t.location = stoi(location);
         t.paytime = paytime;
         t.paycost = stoi(paycost);
-        tic.id[matchtime].push_back(t);
-
+        file.tic.id[matchtime].push_back(t);
+        file.savefile();
     }
 };
 
@@ -59,21 +61,33 @@ public:
     ~Update();
 };
 
-class SeatManagement {
+class SellManagement {
 public:
-    SeatManagement() {
+    SellManagement() {
         File file;
-    
     };
-    ~SeatManagement();
+    ~SellManagement() {};
+    void view() {
+
+    }
 };
 
-class Backend {
+class Backend {//only manager and team can in this
 private:
-    Manager user;
+    User user;
+    Manager m;
+    Team t;
 public:
-    Backend(User *input) :user(input){};
-    Manager returnuser() {
-        return user;
+    Backend(User* input) : user(*input), m(nullptr), t(nullptr) {
+        if (dynamic_cast<Manager*>(input)) {
+            m = new Manager(input);
+        }
+        else if (dynamic_cast<Team*>(input)) {
+            t = new Team(input);
+        }
     }
+    void managercontrol() {
+
+    }
+
 };
