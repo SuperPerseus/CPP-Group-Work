@@ -136,6 +136,7 @@
     <ClInclude Include="login.h" />
     <ClInclude Include="backend.h" />
     <ClInclude Include="team.h" />
+    <ClInclude Include="timestamp.h" />
     <ClInclude Include="user.h" />
   </ItemGroup>
   <ItemGroup>

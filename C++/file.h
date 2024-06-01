@@ -2,7 +2,7 @@
 #include"include.h"
 /*
     ticketfile format: <match_time> id seatgrade location paytime paycost 
-    seatfile format: <match_time> seatgrade[dia,pt,au,ag,cu,fe] gradetotalseat[1:] value[] 
+    seatfile format: <match_time> seatgrade[VIP,NORMAL,SUPER,dia,Pt,Au,Ag,Cu,Fe] gradetotalseat[1:] value[] 
     teamfile format: <match_time> team[0] team[1] 
 */
 
@@ -10,6 +10,16 @@ struct timecompare {
     bool operator()(const string& a, const string& b) {
         return a > b; 
     }
+};
+
+struct seatinfomation {
+public:
+    string matchtime;
+    string seatgrade;
+    int gradetotalseat;
+    unordered_map<int, bool> seated;
+    queue<int> unseat;
+    unordered_map<string, string> values;
 };
 
 struct ticketinfomation {
@@ -22,15 +32,6 @@ public:
     int paycost;
 };
 
-struct seatinfomation {
-public:
-    string matchtime;
-    string seatgrade;
-    int gradetotalseat;
-    unordered_map<int, bool> seated;
-    queue<int> unseat;
-    unordered_map<string, string> values;
-};
 
 struct teaminfomation {
     string matchtime;
@@ -61,8 +62,42 @@ public:
     tickets tic;
     teams tea;
     fstream filecache;//¸ønotifyÓÃ
+    fstream seatsfile;
+    fstream ticketsfile;
+    fstream teamsfile;
     File() {
-        init();
+        const int maxRetries = 10;
+        int attempt = 0;
+        while (attempt < maxRetries) {
+            try {
+                seatsfile.open("seats.txt", std::fstream::in | std::fstream::out | std::ios::app);
+                loadorcreate(seatsfile, string("seats.txt"));
+                ticketsfile.open("tickets.txt", std::fstream::in | std::fstream::out | std::ios::app);
+                loadorcreate(ticketsfile, string("tickets.txt"));
+                teamsfile.open("teams.txt", std::fstream::in | std::fstream::out | std::ios::app);
+                loadorcreate(teamsfile, string("teams.txt"));
+
+                if (!seatsfile.is_open() || !ticketsfile.is_open() || !teamsfile.is_open()) {
+                    throw std::ios_base::failure("File open failed");
+                }
+
+                init(seatsfile, ticketsfile, teamsfile);
+                break;
+
+            }
+            catch (const std::ios_base::failure& e) {
+                std::cerr << "Attempt " << (attempt + 1) << " failed: " << e.what() << std::endl;
+                attempt++;
+                if (seatsfile.is_open()) seatsfile.close();
+                if (ticketsfile.is_open()) ticketsfile.close();
+                if (teamsfile.is_open()) teamsfile.close();
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            }
+        }
+
+        if (attempt == maxRetries) {
+            std::cerr << "File exception: Unable to open files after " << maxRetries << " attempts." << std::endl;
+        }
     };
     ~File() {
         bool successsave=savefile();
@@ -70,20 +105,29 @@ public:
             std::cout << "file save error,exit with error code 103" << endl;
             exit(103);
         }
-        cout << "save file success" << endl;
+        //cout << "save file success" << endl;
     };
     void print() {
         std::cout << tic.matchtime.top() << endl;
     }
-    bool loadticket() ;
-    bool loadseat() ;
-    bool loadteam();
+    bool loadticket(fstream &file) ;
+    bool loadseat(fstream &file) ;
+    bool loadteam(fstream &file);
     bool savefile();
+    void loadorcreate(fstream& file,string filename) {
+        if (!file.is_open()) {
+            std::cout << "seat File does not exist, creating it.\n";
+            file.open(filename, fstream::out);
+        }
+        else {
+            std::cout << "seat File already exists, loading ......\n";
+        }
+    }
 
-    void init() {
-        if (loadseat()) {
-            loadticket();
-            loadteam();
+    void init(fstream &seatsfile, fstream &ticketsfile, fstream &teamsfile) {
+        if (loadseat(seatsfile)) {
+            loadticket(ticketsfile);
+            loadteam(teamsfile);
             print();
             bool yes=savefile();
         }
@@ -96,29 +140,28 @@ public:
 
 };
 
-bool File::loadseat() {
-    fstream file;
-    file.open("seats.txt", fstream::in | fstream::out);
-    if (!file.is_open()) {
-        std::cout << "seat File does not exist, creating it.\n";
-        file.open("seats.txt", fstream::out);
-    }
-    else {
-        std::cout << "seat File already exists, loading ......\n";
-    }
+bool File::loadseat(fstream &file) {
+
 
     string matchtime, seatgrade, gradetotalseat, value;
     seatinfomation s;
-    if (file.is_open()) {
 
+    if (file.is_open()) {
         while (getline(file, matchtime)) {
             getline(file, seatgrade);
             getline(file, gradetotalseat);
             getline(file, value);
+
             s.matchtime = matchtime;
             s.seatgrade = seatgrade;
             s.gradetotalseat = stoi(gradetotalseat);
             s.values[seatgrade] = value;
+
+
+            for (int i = 1; i <= s.gradetotalseat; ++i) {
+                s.seated[i] = true;
+            }
+
             sea.matchtime.push(matchtime);
             sea.setseat[matchtime].push_back(s);
         }
@@ -129,37 +172,35 @@ bool File::loadseat() {
     }
 
     return true;
-
 }
 
-bool File::loadticket() {
-    fstream file;
-    file.open("tickets.txt", fstream::in | fstream::out);
-    if (!file.is_open()) {
-        std::cout << "tikect File does not exist, creating it.\n";
-        file.open("tickets.txt", fstream::out);
-    }
-    else {
-        std::cout << "tikect File already exists, loading ......\n";
-    }
+bool File::loadticket(fstream &file) {
 
     string matchtime, id, seatgrade, location, paytime, paycost;
     ticketinfomation t;
-    if (file.is_open()) {
 
+    if (file.is_open()) {
         while (getline(file, matchtime)) {
             getline(file, id);
             getline(file, seatgrade);
             getline(file, location);
             getline(file, paytime);
             getline(file, paycost);
-            tic.matchtime.push(matchtime);
+
             t.matchtime = matchtime;
             t.id = id;
             t.seatgrade = seatgrade;
             t.location = stoi(location);
             t.paytime = paytime;
             t.paycost = stoi(paycost);
+            for (auto& s : sea.setseat[matchtime]) {
+                if (s.seatgrade == seatgrade) {
+                    s.seated[t.location] = false;
+                    break;
+                }
+            }
+
+            tic.matchtime.push(matchtime);
             tic.id[matchtime].push_back(t);
         }
         file.close();
@@ -169,19 +210,10 @@ bool File::loadticket() {
     }
 
     return true;
-    
 }
 
-bool File::loadteam() {
-    fstream file;
-    file.open("teams.txt", fstream::in | fstream::out);
-    if (!file.is_open()) {
-        std::cout << "team File does not exist, creating it.\n";
-        file.open("teams.txt", fstream::out);
-    }
-    else {
-        std::cout << "team File already exists, loading ......\n";
-    }
+bool File::loadteam(fstream &file) {
+
 
     string matchtime;
     string team[2];

@@ -68,7 +68,7 @@ class Server {
 public:
     Server(User*input):c(input) {};
     void menu() {
-        SellManagement m;
+        
         while (true) {
             cout << "deat customer,what can i do for you " << endl;
             cout << "enter number to choose function" << endl;
@@ -77,22 +77,26 @@ public:
             cout << " 3. refund the ticket " << endl;
             cout << " 4. look your wallet " << endl;
             cout << " 5. exit the system " << endl;
-            int a =getValidInput();
+            int a =getValidInt();
             switch (a) {
             case 1:{
-
+                SellManagement m;
+                m.view();
+                break;
             }
             case 2: {
-
+                SellManagement m;
+                m.book();
+                break;
             }
             case 3: {
-
+                break;
             }
             case 4: {
-
+                break;
             }
             case 5: {
-
+                break;
             }
             }
         }
