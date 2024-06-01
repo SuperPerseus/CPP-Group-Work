@@ -39,24 +39,31 @@ int getVaildChoice() {//加个价格设置有效检验
     }
 }
 
-int getValidInt() {//加个价格设置有效检验
+int getValidInt() {
     int number;
     while (true) {
         try {
-            cout << "please enter : ";
-            cin >> number;
+            std::cout << "Please enter a positive number: ";
+            std::cin >> number;
 
-            if (cin.fail()) {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                throw invalid_argument("Invalid input, please enter a number.");
+            if (std::cin.fail()) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                throw std::invalid_argument("Invalid input, please enter a number.");
+            }
+
+            if (number <= 0) {
+                throw std::out_of_range("Number must be positive, please enter a positive number.");
             }
 
             return number;
 
         }
-        catch (const invalid_argument& e) {
-            cerr << e.what() << endl;
+        catch (const std::invalid_argument& e) {
+            std::cerr << e.what() << std::endl;
+        }
+        catch (const std::out_of_range& e) {
+            std::cerr << e.what() << std::endl;
         }
     }
 }
@@ -97,6 +104,64 @@ string getValidTimeString() {
         }
         catch (const invalid_argument& e) {
             cout << e.what() << " Please try again." << endl;
+        }
+    }
+}
+
+
+string getValidPassword() {
+    std::string input;
+    while (true) {
+        try {
+            std::cout << "plase enter your 6 size numbers password: ";
+            std::cin >> input;
+
+            std::regex pattern{ "\\d{6}" };
+            if (!std::regex_match(input, pattern)) {
+                throw std::invalid_argument("Invalid 6 number password.");
+            }
+
+            return input;
+        }
+        catch (const std::invalid_argument& e) {
+            std::cerr << e.what() << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        catch (const std::out_of_range& e) {
+            std::cerr << "invalid input ,out of 6 size range" << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+    }
+}
+
+
+float getValidFloat() {
+    float number;
+    while (true) {
+        try {
+            std::cout << "Please enter a float number greater than or equal to 0: ";
+            std::cin >> number;
+
+            if (std::cin.fail()) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                throw std::invalid_argument("Invalid input, please enter a float number.");
+            }
+
+            if (number < 0) {
+                throw std::out_of_range("Number must be greater than or equal to 0, please enter a valid float number.");
+            }
+
+            return number;
+
+        }
+        catch (const std::invalid_argument& e) {
+            std::cerr << e.what() << std::endl;
+        }
+        catch (const std::out_of_range& e) {
+            std::cerr << e.what() << std::endl;
         }
     }
 }

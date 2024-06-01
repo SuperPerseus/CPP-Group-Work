@@ -2,19 +2,191 @@
 #include "include.h"
 #include "head.h"
 
+using namespace CryptoPP;
 
+class Wallet {
+private:
+    Customer c;
+    fstream walletfile;
+    string key;
+    string id, ba;
+
+    void recharge() {
+        float newba = getValidFloat() + stof(ba);
+        walletfile.seekp(0);
+        walletfile << key << endl << id << endl << to_string(newba) << endl;
+    }
+
+public:
+    Wallet(Customer input) : c(input) {
+        try {
+            walletfile.open(c.returnid(), fstream::in | fstream::out | fstream::app);
+
+            if (!walletfile.is_open()) {
+                throw ios_base::failure("File open failed");
+            }
+
+            walletfile.seekg(0, ios::end);
+            if (walletfile.tellg() == 0) {
+                // File is empty, initialize it
+                cout << "File is empty, initializing it." << endl;
+                walletfile.close();
+                walletfile.open(c.returnid(), fstream::out);
+                if (walletfile.is_open()) {
+                    cout << "Initializing wallet..." << endl;
+                    id = c.returnid();
+                    key = getValidPassword();
+                    ba = "0";
+                    walletfile << key << endl << id << endl << ba << endl;
+                    walletfile.close();
+                    walletfile.open(c.returnid(), fstream::in | fstream::out);
+                }
+            }
+            else {                
+                walletfile.seekg(0, ios::beg);               
+                cout << "File already exists, loading..." << endl;
+                balance();
+            }
+        }
+        catch (const ios_base::failure& e) {
+            cerr << "Can't create or open the wallet, exiting with code 104." << endl;
+            exit(104);
+        }
+    }
+
+    ~Wallet() {
+        walletfile.close();
+    }
+
+    void menu() {
+        int choice;
+        do {
+            cout << "1. Check balance" << endl;
+            cout << "2. Recharge" << endl;
+            cout << "3. Exit" << endl;
+            choice = getVaildChoice();
+            switch (choice) {
+            case 1:
+                cout << "Your balance is: " << balance() << endl;
+                break;
+            case 2:
+                recharge();
+                break;
+            case 3:
+                break;
+            default:
+                cout << "Wrong input, please enter again." << endl;
+                break;
+            }
+        } while (choice != 3);
+    }
+
+    float balance() {
+        key = getValidPassword();
+        AES_Encrypt_Decrypt_File(walletfile, key, false);
+        if (walletfile.is_open()) {
+            getline(walletfile, key);
+            getline(walletfile, id);
+            getline(walletfile, ba);
+        }
+        return stof(ba);
+    }
+
+    bool reduce(float reducevalue) {
+        if (reducevalue > stof(ba)) {
+            return false;
+        }
+        else {
+            float tempba = stof(ba) - reducevalue;
+            ba = to_string(tempba);
+            walletfile.seekp(0);
+            walletfile << key << endl << id << endl << ba << endl;
+            return true;
+        }
+    }
+
+    void AES_Encrypt_Decrypt_File(fstream& file, const string& key, bool encrypt) {
+        SHA256 hash;
+        SecByteBlock keyBlock(AES::DEFAULT_KEYLENGTH);
+        hash.CalculateDigest(keyBlock, reinterpret_cast<const byte*>(key.data()), key.size());
+
+        byte iv[AES::BLOCKSIZE];
+        hash.CalculateDigest(iv, keyBlock, keyBlock.size());
+
+        string fileContents((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+
+        string result;
+        int exceptionCount = 0;
+        while (exceptionCount < 3) {
+            try {
+                if (encrypt) {
+                    CBC_Mode<AES>::Encryption encryption;
+                    encryption.SetKeyWithIV(keyBlock, keyBlock.size(), iv);
+
+                    StringSource ss(fileContents, true,
+                        new StreamTransformationFilter(encryption,
+                            new StringSink(result)
+                        )
+                    );
+                }
+                else {
+                    CBC_Mode<AES>::Decryption decryption;
+                    decryption.SetKeyWithIV(keyBlock, keyBlock.size(), iv);
+
+                    StringSource ss(fileContents, true,
+                        new StreamTransformationFilter(decryption,
+                            new StringSink(result)
+                        )
+                    );
+                }
+                break;
+            }
+            catch (const Exception& e) {
+                cerr << e.what() << endl;
+                exceptionCount++;
+            }
+        }
+
+        if (exceptionCount >= 3) {
+            cerr << "Too many exceptions, exiting." << endl;
+            exit(101);
+        }
+
+        file.seekp(0);
+        file << result;
+        file.flush();
+    }
+};
+
+class Payment {
+private:
+    int password;
+    int paynumber = 0;
+    Customer c;
+public:
+    Payment(int shouldpay, Customer user) :paynumber(shouldpay), c(user) {
+    }
+    bool pay(float price) {
+        cout << endl;
+        cout << "loading your wallet " << endl;
+        Wallet wallet(c);
+        wallet.reduce(price);
+
+        return true;
+    }
+};
 
 class Reserve {//Ô¤¶©Æ±
 public:
     Reserve(){}
     ~Reserve(){}
-    bool book() {
+    bool book(Customer c) {
         timestamp();
         string wanttime, wantgrade;
         bool timeExists = false;
         bool gradeExists = false;
         int availseats = 0;
-        int price = -1;
+        float price = -1;
         File file;
         wanttime = getValidTimeString();
         while (true) {
@@ -33,7 +205,7 @@ public:
                                     availseats++;
                                 }
                             }
-                            price = stoi(seat.values.at(seat.seatgrade));
+                            price = stof(seat.values.at(seat.seatgrade));
                             break;
                         }
                     }
@@ -60,14 +232,16 @@ public:
                 cout << "invaild seats enter agagin " << endl;
                 continue;
             }
-            int totalPrice = wantbookseats * price;
+            float totalPrice = wantbookseats * price;
             cout << "Total price: " << totalPrice << endl;
-            bool paysuccess=Payment pay(totalPrice);
+            Payment pay(totalPrice,c);
+            bool paysuccess = pay.pay(totalPrice);
 
             break;
 
 
         }
+        return true;
         
     }
 
@@ -108,23 +282,14 @@ class Reservation {
 public:
 };
 
-class Payment {
-private:
-    int pay = 0;
-public:
-    Payment(int shouldpay):pay(shouldpay) {
-    }
-    bool pay()
-};
+
 
 class Refund {
 public:
 
 };
 
-class Wallet {
 
-};
 
 class Server {
     Customer c;
@@ -153,13 +318,15 @@ public:
                 Viewing v;
                 v.view();
                 Reserve r;
-                bool booksuccess=r.book();
+                bool booksuccess=r.book(c);
                 break;
             }
             case 3: {
                 break;
             }
             case 4: {
+                Wallet wallet(c);
+                wallet.menu();
                 break;
             }
             case 5: {
