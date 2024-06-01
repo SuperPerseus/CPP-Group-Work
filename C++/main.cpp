@@ -1,3 +1,4 @@
+#pragma once
 #include"head.h"
 #include"include.h"
 
