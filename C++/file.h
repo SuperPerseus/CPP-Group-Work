@@ -32,7 +32,6 @@ public:
     int paycost;
 };
 
-
 struct teaminfomation {
     string matchtime;
     string teamid[2];
@@ -130,6 +129,8 @@ public:
             loadteam(teamsfile);
             print();
             bool yes=savefile();
+            cout << endl;
+            cout << endl;
         }
         else {
             std::cout << "The file cannot be opened or created.\n";
@@ -193,7 +194,7 @@ bool File::loadticket(fstream &file) {
             t.location = stoi(location);
             t.paytime = paytime;
             t.paycost = stoi(paycost);
-            for (auto& s : sea.setseat[matchtime]) {
+            for (auto& s : sea.setseat[matchtime]) {//检查比赛时间合不合法
                 if (s.seatgrade == seatgrade) {
                     s.seated[t.location] = false;
                     break;

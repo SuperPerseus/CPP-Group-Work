@@ -1,6 +1,9 @@
 #pragma once
 #include "include.h"
-#include "head.h"
+#include "customer.h"
+#include "file.h"
+#include "legalinput.h"
+
 
 
 
@@ -65,62 +68,17 @@ public:
 };
 
 class SellManagement {
+private:
+    bool tokens=false;
 public:
-    SellManagement() {    
+    SellManagement(){
+
+    }
+    SellManagement(bool input):tokens(input) {
     };
+
     ~SellManagement() {};
-    void view() {
-        timestamp();
-        File file;
-        for (const auto& time : file.sea.setseat) {
-            const string& matchtime = time.first;
-            const vector<seatinfomation>& seatinfomation = time.second;
 
-            cout << "Matchtime is: " << matchtime << endl;
-
-            for (const auto& seatinfo : seatinfomation) {
-                int available_seats = 0;
-                for (const auto& seat : seatinfo.seated) {
-                    if (seat.second) {
-                        available_seats++;
-                    }
-                }
-                string price = seatinfo.values.at(seatinfo.seatgrade);
-
-                cout << "seatgrade: " << seatinfo.seatgrade <<  " , can booked total seats: " << available_seats << ", this grade's price: " << price << endl;
-            }
-
-            cout << endl;
-            cout << endl;
-        }
-    }
-    void book() {
-        timestamp();
-
-        string wanttime, wantgrade, wanthowmuch;
-        view();
-        bool timeExists = false;
-        bool gradeExists = false;
-        File file;
-        wanttime=getValidTimeString();
-        while(true) {
-            cout << "enter your want seatgrade";
-            cin >> wantgrade;
-            for (const auto& time : file.sea.setseat) {
-                const string& matchtime = time.first;
-                const vector<seatinfomation>& seatinfomation = time.second;
-                if (matchtime == wanttime) {
-                    break;
-                }
-            }
-
-            
-
-        } 
-        
-
-
-    }
 };
 
 class Backend {//only manager and team can in this
