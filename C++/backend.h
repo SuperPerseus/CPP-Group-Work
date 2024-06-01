@@ -12,10 +12,13 @@ public:
 
 class SeatAdd {
 public:
-    SeatAdd(){}
+    SeatAdd(){
+        
+    }
     ~SeatAdd() {
     };
-    void add(File& file) {
+    void add() {
+        File file;
         std::string matchtime, id, seatgrade, location, paytime, paycost;
         ticketinfomation t;
         std::cout << "请输入比赛时间: ";
@@ -63,11 +66,59 @@ public:
 
 class SellManagement {
 public:
-    SellManagement() {
-        File file;
+    SellManagement() {    
     };
     ~SellManagement() {};
     void view() {
+        timestamp();
+        File file;
+        for (const auto& time : file.sea.setseat) {
+            const string& matchtime = time.first;
+            const vector<seatinfomation>& seatinfomation = time.second;
+
+            cout << "Matchtime is: " << matchtime << endl;
+
+            for (const auto& seatinfo : seatinfomation) {
+                int available_seats = 0;
+                for (const auto& seat : seatinfo.seated) {
+                    if (seat.second) {
+                        available_seats++;
+                    }
+                }
+                string price = seatinfo.values.at(seatinfo.seatgrade);
+
+                cout << "seatgrade: " << seatinfo.seatgrade <<  " , can booked total seats: " << available_seats << ", this grade's price: " << price << endl;
+            }
+
+            cout << endl;
+            cout << endl;
+        }
+    }
+    void book() {
+        timestamp();
+
+        string wanttime, wantgrade, wanthowmuch;
+        view();
+        bool timeExists = false;
+        bool gradeExists = false;
+        File file;
+        wanttime=getValidTimeString();
+        while(true) {
+            cout << "enter your want seatgrade";
+            cin >> wantgrade;
+            for (const auto& time : file.sea.setseat) {
+                const string& matchtime = time.first;
+                const vector<seatinfomation>& seatinfomation = time.second;
+                if (matchtime == wanttime) {
+                    break;
+                }
+            }
+
+            
+
+        } 
+        
+
 
     }
 };

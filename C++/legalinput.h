@@ -2,12 +2,19 @@
 #include"include.h"
 #include"head.h"
 
+#ifdef max
+#undef max
+#endif
 
-int getValidInput() {
+#ifdef min
+#undef min
+#endif
+
+int getValidInt() {//加个价格设置有效检验
     int choice;
     while (true) {
         try {
-            cout << "Please enter your choice: ";
+            cout << "please enter : ";
             cin >> choice;
 
             if (cin.fail()) {
@@ -28,6 +35,46 @@ int getValidInput() {
         }
         catch (const out_of_range& e) {
             cerr << e.what() << endl;
+        }
+    }
+}
+
+string getValidTimeString() {
+    const regex pattern(
+        R"((\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2}))"
+    );
+
+    string input;
+    while (true) {
+        try {
+            cout << "enter the time must obey the printed format (format: YYYY-MM-DD HH:MM:SS): ";
+            getline(cin, input);
+
+            smatch match;
+            if (regex_match(input, match, pattern)) {
+                int year = stoi(match[1].str());
+                int month = stoi(match[2].str());
+                int day = stoi(match[3].str());
+                int hour = stoi(match[4].str());
+                int minute = stoi(match[5].str());
+                int second = stoi(match[6].str());
+
+                // 检查日期和时间的合法性
+                if (year >= 0 && month >= 1 && month <= 12 && day >= 1 && day <= 31 &&
+                    hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59 && second >= 0 && second <= 59) {
+                    cout << "Valid date and time format." << endl;
+                    return input;
+                }
+                else {
+                    throw invalid_argument("Invalid date and time values.");
+                }
+            }
+            else {
+                throw invalid_argument("Invalid date and time format.");
+            }
+        }
+        catch (const invalid_argument& e) {
+            cout << e.what() << " Please try again." << endl;
         }
     }
 }
