@@ -12,11 +12,11 @@ int main() {//¼ÓµÇÂ¼¿ØÖÆ£¬ÊäÈë¼ì²â
             break;
         }
         case 2: {
-            Backend bk(logorregister.returnuser());
+            Backend bk(logorregister.returnuser(), logorregister.returnToken());
             break;
         }           
         case 3: {
-            Backend bk(logorregister.returnuser());
+            Backend bk(logorregister.returnuser(), logorregister.returnToken());
             break;
         }
     }

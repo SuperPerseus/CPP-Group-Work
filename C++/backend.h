@@ -42,7 +42,7 @@ public:
         bkViewing v;
         while (true) {           
             v.view();
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::this_thread::sleep_for(std::chrono::seconds(3));
             if (_kbhit()) {
                 break;
             }
@@ -74,7 +74,7 @@ public:
             if (time.first == matchtime) {
                 for (auto& seat : time.second) {
                     if (seat.seatgrade == seatgrade) {
-                        if (seat.gradetotalseat < stoi(gradetotalseats)) {
+                        if (seat.gradetotalseat > stoi(gradetotalseats)) {
                             cout << "new seats are lower than the now ,some  locked seats will be canceled too " << endl;
                             cout << "if you want stop the opertion ,please put 0. if you want continue,enter the 1" << endl;
                             int Dangerous_operation = getValidInt();
@@ -298,9 +298,10 @@ public:
             cout << " 3. add new grade  " << endl;
             cout << " 4. notify mode  " << endl;
             cout << " 5. seat delete  " << endl;
-            cout << " 6. exit the system " << endl;
+            cout << " 6. viewing the now seats and match  " << endl;
+            cout << " 7. exit the system " << endl;
             cout << endl;
-            int a = getValidChoice();
+            int a = getValidInt();
             switch (a) {
             case 1: {
                 SeatAdd sa;
@@ -323,7 +324,15 @@ public:
                 break;
             }
             case 6: {
+                bkViewing bk;
+                bk.view();
+                break;
+            }
+            case 7: {
                 return;
+            }
+            default: {
+                break;
             }
             }
         }
@@ -339,15 +348,18 @@ public:
 };
 
 class Backend {//only manager and team can in this
+private:
+    bool token=false;
 public:
-    Backend(Manager *input){
-        cout << "here" << endl;
-        Manager m(input);
-        SellManagement sm(m);
+    Backend(User* input,bool token) :token(token) {
+        if (token == true) {
+            Manager m(input);
+            SellManagement sm(m);
+        }
+        else {
+            Team t(input);
 
-    }
-    Backend(Team *input) {
-        /*SellManagement sm(input);*/
+        }
     }
     ~Backend() {};
 };
