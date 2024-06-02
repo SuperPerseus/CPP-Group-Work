@@ -1,6 +1,6 @@
 #pragma once
 /*
-	101:error wallet password
+	101:cant control the wallet file
 	103:cant save message
 	104:cant open the file
 	105:matchtime is different with seat record

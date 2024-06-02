@@ -7,7 +7,7 @@ void timestamp() {
 	SYSTEMTIME st;
 	GetLocalTime(&st);
 
-	std::cout << "print now timestaomp: "
+	std::cout << "print now timestamp : "
 		<< std::setw(4) << std::setfill('0') << st.wYear << "-"
 		<< std::setw(2) << std::setfill('0') << st.wMonth << "-"
 		<< std::setw(2) << std::setfill('0') << st.wDay << " "

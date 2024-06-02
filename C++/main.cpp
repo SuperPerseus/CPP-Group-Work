@@ -6,8 +6,7 @@ int main() {//¼ÓµÇÂ¼¿ØÖÆ£¬ÊäÈë¼ì²â
     Login logorregister;
     
     switch (stoi((logorregister.returnuser())->returntype())) {
-        case 1: {
-            
+        case 1: {            
             Server server(logorregister.returnuser());
             server.menu();
             break;
@@ -21,5 +20,7 @@ int main() {//¼ÓµÇÂ¼¿ØÖÆ£¬ÊäÈë¼ì²â
             break;
         }
     }
+    cout << endl;
+    cout << "program end successfully " << endl;
     return 0;
 }

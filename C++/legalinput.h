@@ -10,7 +10,7 @@
 #undef min
 #endif
 
-int getVaildChoice() {//加个价格设置有效检验
+int getValidChoice() {//加个价格设置有效检验
     int choice;
     while (true) {
         try {
