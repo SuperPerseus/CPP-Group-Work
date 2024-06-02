@@ -106,10 +106,10 @@ public:
 class Payment {
 private:
     int password;
-    int paynumber = 0;
+    float paynumber = 0;
     Customer c;
 public:
-    Payment(int shouldpay, Customer user) :paynumber(shouldpay), c(user) {
+    Payment(float shouldpay, Customer user) :paynumber(shouldpay), c(user) {
     }
     bool pay(float price) {
         cout << endl;
@@ -232,7 +232,7 @@ public:
 
 };
 
-class Viewing {//没有必要，可以合并到reservation
+class Viewing {
 public:
     Viewing(){}
     ~Viewing(){}
@@ -400,7 +400,6 @@ public:
                 break;
             }
             case 5: {
-
                 return ;
             }
             }

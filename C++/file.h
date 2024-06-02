@@ -177,10 +177,9 @@ bool File::loadseat(fstream &file) {
 }
 
 bool File::loadticket(fstream &file) {
-
+    bool notheseat = false;
     string matchtime, id, seatgrade, location, paytime, paycost;
     ticketinfomation t;
-
     if (file.is_open()) {
         while (getline(file, matchtime)) {
             getline(file, id);
@@ -197,13 +196,20 @@ bool File::loadticket(fstream &file) {
             t.paycost = stoi(paycost);
             for (auto& s : sea.setseat[matchtime]) {//检查比赛时间合不合法
                 if (s.seatgrade == seatgrade) {
+                    if (s.gradetotalseat == -1) {
+                        notheseat = true;
+                    }
                     s.seated[t.location] = false;
                     break;
                 }
             }
+            if (notheseat != true) {
+                tic.matchtime.push(matchtime);
+                tic.id[matchtime].push_back(t);
+            }
+            
 
-            tic.matchtime.push(matchtime);
-            tic.id[matchtime].push_back(t);
+            
         }
         file.close();
     }
