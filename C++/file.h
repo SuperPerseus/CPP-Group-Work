@@ -18,7 +18,6 @@ public:
     string seatgrade;
     int gradetotalseat;
     unordered_map<int, bool> seated;
-    queue<int> unseat;
     unordered_map<string, string> values;
 };
 
@@ -75,6 +74,8 @@ public:
                 loadorcreate(ticketsfile, string("tickets.txt"));
                 teamsfile.open("teams.txt", std::fstream::in | std::fstream::out | std::ios::app);
                 loadorcreate(teamsfile, string("teams.txt"));
+                cout << endl;
+                cout << endl;
 
                 if (!seatsfile.is_open() || !ticketsfile.is_open() || !teamsfile.is_open()) {
                     throw std::ios_base::failure("File open failed");
@@ -115,11 +116,11 @@ public:
     bool savefile();
     void loadorcreate(fstream& file,string filename) {
         if (!file.is_open()) {
-            std::cout << "seat File does not exist, creating it.\n";
+            std::cout << "does not exist, creating it.\n";
             file.open(filename, fstream::out);
         }
         else {
-            std::cout << "seat File already exists, loading ......\n";
+            cout << endl;
         }
     }
 
@@ -265,6 +266,7 @@ bool File::savefile() {
             }
             else {
                 std::cout << "in one matchtime,lose some seat record,error with code 106" << std::endl;
+                cout << "seat" << endl;
                 exit(106);
             }
         }
@@ -297,6 +299,7 @@ bool File::savefile() {
             }
             else {
                 std::cout << "in one matchtime,lose some seat record,error with code 106" << std::endl;
+                cout << "ticket" << endl;
                 exit(106);
             }
         }
@@ -330,6 +333,7 @@ bool File::savefile() {
             }
             else {
                 std::cout << "in one matchtime,lose some seat record,error with code 106" << std::endl;
+                cout << "team" << endl;
                 exit(106);
             }
         }

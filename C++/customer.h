@@ -90,6 +90,16 @@ public:
             updateFile();
         }
     }
+    void refund(float amount) {       
+        if (amount < 0) {
+            std::cout << "Invalid amount. End with error code 102" << std::endl;
+            exit(102);
+        }
+        else {
+            balance += amount;
+            updateFile();
+        }
+    }
 };
 
 
@@ -172,14 +182,50 @@ public:
             cout << "Total price: " << totalPrice << endl;
             Payment pay(totalPrice,c);
             paysuccess = pay.pay(totalPrice);
+            if (paysuccess == true) {
+                int lockedseats = 0;
+                ticketinfomation newt;
+                vector<int> seatsvector;
+                newt.matchtime = wanttime;
+                newt.id = c.returnid();
+                newt.seatgrade = wantgrade;
 
+                for (auto& time : file.sea.setseat) {
+                    string matchtime = time.first;
+                    vector<seatinfomation>& seatinfomation = time.second;
+                    if (matchtime == wanttime) {
+                        timeExists = true;
+                        for (auto& seat : seatinfomation) {
+                            if (seat.seatgrade == wantgrade) {
+                                for (auto& it : seat.seated) {
+                                    if (it.second) {  
+                                        it.second = false;  
+                                        seatsvector.push_back(it.first);  
+                                        lockedseats++;  
+                                        if (lockedseats >= wantbookseats) {  
+                                            break;  
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                newt.paytime = returntimestamp();
+                for (auto e : seatsvector) {
+                    newt.location = e;
+                    file.tic.matchtime.push(wanttime);
+                    file.tic.id[wanttime].push_back(newt);
+                }
+                cout << endl;
+                cout << endl;
+            }
             break;
         }
 
-        if (paysuccess == true) {
-            
-            file.tic
-        }
+        
         return true;
         
     }
@@ -197,7 +243,7 @@ public:
             const string& matchtime = time.first;
             const vector<seatinfomation>& seatinfomation = time.second;
 
-            cout << "Matchtime is: " << matchtime << endl;
+            cout << "matchtime is: " << matchtime << endl;
 
             for (const auto& seatinfo : seatinfomation) {
                 int available_seats = 0;
@@ -219,11 +265,9 @@ public:
 
 class Reservation {
 public:
-    Reservation() {}
-    ~Reservation() {}
-
-    void viewTickets(const Customer& c) {
-        std::string id = c.returnId();
+    Reservation(Customer& c) {
+    
+        std::string id = c.returnid();
         std::string fileName = "tickets.txt"; // Assuming all tickets are stored in this file
         std::ifstream file(fileName);
 
@@ -250,16 +294,72 @@ public:
         for (const auto& ticket : userTickets) {
             std::cout << ticket << std::endl;
         }
+    
     }
+    ~Reservation() {}
 };
 
 
 
 class Refund {
+private:
+    float refundTotal = 0.0;
+
 public:
+    Refund(Customer& c) {
+        File file;
+        bool ticketFound = false;
+        vector<ticketinfomation>::iterator it;
 
+        string matchtime = getValidTimeString();
+        string seatgrade;
+        int location = -1;
+
+        cout << "Please enter your seat grade: ";
+        cin >> seatgrade;
+        cout << "Please enter your seat location: ";
+        cin >> location;
+
+        for (auto iter = file.tic.id[matchtime].begin(); iter != file.tic.id[matchtime].end(); ++iter) {
+            if (iter->id == c.returnid() && iter->seatgrade == seatgrade && iter->location == location) {
+                ticketFound = true;
+                it = iter;
+                break;
+            }
+        }
+
+        if (ticketFound) {
+            for (auto& time : file.sea.setseat) {
+                if (time.first == matchtime) {
+                    for (auto& seat : time.second) {
+                        if (seat.seatgrade == seatgrade) {
+                            for (auto& seatinfo : seat.seated) {
+                                if (seatinfo.first == location && seatinfo.second == false) {
+                                    seatinfo.second = true; 
+                                    refundTotal = stof(seat.values[seatgrade]);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            file.tic.id[matchtime].erase(it);
+            cout << "Refund processed for user ID: " << c.returnid() << ". Total refund amount: " << refundTotal << endl;
+
+            // Assuming Wallet is defined and c has a method to access wallet
+            Wallet wallet(c);
+            wallet.refund(refundTotal);
+        }
+        else {
+            cout << "No matching ticket found for the given details." << endl;
+            cout << "Please check the input details again." << endl;
+        }
+    }
+
+    ~Refund() {}
 };
-
 
 
 class Server {
@@ -293,6 +393,9 @@ public:
                 break;
             }
             case 3: {
+                Reservation reservation(c);
+                Refund refund(c);
+
                 break;
             }
             case 4: {
