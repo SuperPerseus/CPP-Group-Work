@@ -28,7 +28,7 @@ public:
     string seatgrade;
     int location;
     string paytime;
-    int paycost;
+    int paycost=0;
 };
 
 struct teaminfomation {
@@ -264,11 +264,6 @@ bool File::savefile() {
 
                 file << seatitem.matchtime << endl << seatitem.seatgrade << endl << seatitem.gradetotalseat << endl << seatitem.gradetotalseat << endl;
             }
-            else {
-                std::cout << "in one matchtime,lose some seat record,error with code 106" << std::endl;
-                cout << "seat" << endl;
-                exit(106);
-            }
         }
         else {
             std::cout << "matchtime is different with seat record,error with code 105" << std::endl;
@@ -296,11 +291,6 @@ bool File::savefile() {
                 it->second.erase(it->second.begin());
 
                 ticketfile << ticketitem.matchtime << endl << ticketitem.id << endl << ticketitem.seatgrade << endl << ticketitem.location << endl<< ticketitem.paytime<<endl<< ticketitem.paycost<<endl;
-            }
-            else {
-                std::cout << "in one matchtime,lose some seat record,error with code 106" << std::endl;
-                cout << "ticket" << endl;
-                exit(106);
             }
         }
         else {
@@ -330,11 +320,6 @@ bool File::savefile() {
                 it->second.erase(it->second.begin());
 
                 teamfile << teamitem.matchtime << endl << teamitem.teamid[0] << teamitem.teamid[1] << endl;
-            }
-            else {
-                std::cout << "in one matchtime,lose some seat record,error with code 106" << std::endl;
-                cout << "team" << endl;
-                exit(106);
             }
         }
         else {
