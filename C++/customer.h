@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "include.h"
 #include "head.h"
 
@@ -7,156 +7,91 @@ using namespace CryptoPP;
 class Wallet {
 private:
     Customer c;
-    fstream walletfile;
-    string key;
-    string id, ba;
-
-    void recharge() {
-        float newba = getValidFloat() + stof(ba);
-        walletfile.seekp(0);
-        walletfile << key << endl << id << endl << to_string(newba) << endl;
-    }
+    std::fstream file;
+    std::string id;
+    float balance;
+    std::string fileName;
 
 public:
+    // Constructor opens the file associated with the customer's ID and initializes the balance
     Wallet(Customer input) : c(input) {
         try {
-            walletfile.open(c.returnid(), fstream::in | fstream::out | fstream::app);
+            id = c.returnid();
+            fileName = id + ".txt";
 
-            if (!walletfile.is_open()) {
-                throw ios_base::failure("File open failed");
+            // Open the file in read mode to check if it exists and read data
+            file.open(fileName, std::ios::in);
+            if (file.is_open()) {
+                file >> id >> balance;
+                file.close();
             }
-
-            walletfile.seekg(0, ios::end);
-            if (walletfile.tellg() == 0) {
-                // File is empty, initialize it
-                cout << "File is empty, initializing it." << endl;
-                walletfile.close();
-                walletfile.open(c.returnid(), fstream::out);
-                if (walletfile.is_open()) {
-                    cout << "Initializing wallet..." << endl;
-                    id = c.returnid();
-                    key = getValidPassword();
-                    ba = "0";
-                    walletfile << key << endl << id << endl << ba << endl;
-                    walletfile.close();
-                    walletfile.open(c.returnid(), fstream::in | fstream::out);
+            else {
+                // If file does not exist, create one with initial balance of 100000
+                balance = 100000;
+                bool update_success = false;
+                update_success = updateFile();
+                if (update_success) {
+                    throw std::ios_base::failure("File open failed");
                 }
+                
             }
-            else {                
-                walletfile.seekg(0, ios::beg);               
-                cout << "File already exists, loading..." << endl;
-                balance();
-            }
+            
         }
-        catch (const ios_base::failure& e) {
-            cerr << "Can't create or open the wallet, exiting with code 104." << endl;
-            exit(104);
+        catch (const std::ios_base::failure& e) {
+            std::cerr << "cant control the wallet file  " << e.what() << std::endl;
+            cout << "end with error code 101 " << endl;
+            exit(101);         
         }
     }
 
+    // Destructor writes back data and closes the file
     ~Wallet() {
-        walletfile.close();
+        updateFile();
     }
 
-    void menu() {
-        int choice;
-        do {
-            cout << "1. Check balance" << endl;
-            cout << "2. Recharge" << endl;
-            cout << "3. Exit" << endl;
-            choice = getVaildChoice();
-            switch (choice) {
-            case 1:
-                cout << "Your balance is: " << balance() << endl;
-                break;
-            case 2:
-                recharge();
-                break;
-            case 3:
-                break;
-            default:
-                cout << "Wrong input, please enter again." << endl;
-                break;
-            }
-        } while (choice != 3);
-    }
-
-    float balance() {
-        key = getValidPassword();
-        AES_Encrypt_Decrypt_File(walletfile, key, false);
-        if (walletfile.is_open()) {
-            getline(walletfile, key);
-            getline(walletfile, id);
-            getline(walletfile, ba);
+    // Writes the current id and balance back to the file
+    bool updateFile() {
+        file.open(fileName, std::ios::out | std::ios::trunc);
+        if (file.is_open()) {
+            file << id << "\n" << balance << "\n";
+            file.close();
         }
-        return stof(ba);
+        return true;
     }
 
-    bool reduce(float reducevalue) {
-        if (reducevalue > stof(ba)) {
+    // Reduce the balance by a specified amount if possible
+    bool reduce(float amount) {
+        if (amount > balance) {
+            std::cout << "Insufficient balance." << std::endl;
             return false;
         }
         else {
-            float tempba = stof(ba) - reducevalue;
-            ba = to_string(tempba);
-            walletfile.seekp(0);
-            walletfile << key << endl << id << endl << ba << endl;
+            balance -= amount;
+            updateFile();
             return true;
         }
     }
 
-    void AES_Encrypt_Decrypt_File(fstream& file, const string& key, bool encrypt) {
-        SHA256 hash;
-        SecByteBlock keyBlock(AES::DEFAULT_KEYLENGTH);
-        hash.CalculateDigest(keyBlock, reinterpret_cast<const byte*>(key.data()), key.size());
+    // View current balance
+    void view() const {
+        std::cout << "Current balance: Â¥" << balance << std::endl;
+    }
 
-        byte iv[AES::BLOCKSIZE];
-        hash.CalculateDigest(iv, keyBlock, keyBlock.size());
-
-        string fileContents((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
-
-        string result;
-        int exceptionCount = 0;
-        while (exceptionCount < 3) {
-            try {
-                if (encrypt) {
-                    CBC_Mode<AES>::Encryption encryption;
-                    encryption.SetKeyWithIV(keyBlock, keyBlock.size(), iv);
-
-                    StringSource ss(fileContents, true,
-                        new StreamTransformationFilter(encryption,
-                            new StringSink(result)
-                        )
-                    );
-                }
-                else {
-                    CBC_Mode<AES>::Decryption decryption;
-                    decryption.SetKeyWithIV(keyBlock, keyBlock.size(), iv);
-
-                    StringSource ss(fileContents, true,
-                        new StreamTransformationFilter(decryption,
-                            new StringSink(result)
-                        )
-                    );
-                }
-                break;
-            }
-            catch (const Exception& e) {
-                cerr << e.what() << endl;
-                exceptionCount++;
-            }
+    // Recharge the balance by asking the user for an amount
+    void recharge() {
+        float amount;
+        std::cout << "Enter amount to recharge: ";
+        std::cin >> amount;
+        if (amount < 0) {
+            std::cout << "Invalid amount." << std::endl;
         }
-
-        if (exceptionCount >= 3) {
-            cerr << "Too many exceptions, exiting." << endl;
-            exit(101);
+        else {
+            balance += amount;
+            updateFile();
         }
-
-        file.seekp(0);
-        file << result;
-        file.flush();
     }
 };
+
 
 class Payment {
 private:
@@ -171,12 +106,13 @@ public:
         cout << "loading your wallet " << endl;
         Wallet wallet(c);
         wallet.reduce(price);
-
         return true;
     }
 };
 
-class Reserve {//Ô¤¶©Æ±
+class Reserve {//é¢„è®¢ç¥¨
+private:
+    bool paysuccess = false;
 public:
     Reserve(){}
     ~Reserve(){}
@@ -235,11 +171,14 @@ public:
             float totalPrice = wantbookseats * price;
             cout << "Total price: " << totalPrice << endl;
             Payment pay(totalPrice,c);
-            bool paysuccess = pay.pay(totalPrice);
+            paysuccess = pay.pay(totalPrice);
 
             break;
+        }
 
-
+        if (paysuccess == true) {
+            
+            file.tic
         }
         return true;
         
@@ -247,7 +186,7 @@ public:
 
 };
 
-class Viewing {//Ã»ÓÐ±ØÒª£¬¿ÉÒÔºÏ²¢µ½reservation
+class Viewing {//æ²¡æœ‰å¿…è¦ï¼Œå¯ä»¥åˆå¹¶åˆ°reservation
 public:
     Viewing(){}
     ~Viewing(){}
@@ -280,6 +219,38 @@ public:
 
 class Reservation {
 public:
+    Reservation() {}
+    ~Reservation() {}
+
+    void viewTickets(const Customer& c) {
+        std::string id = c.returnId();
+        std::string fileName = "tickets.txt"; // Assuming all tickets are stored in this file
+        std::ifstream file(fileName);
+
+        if (!file.is_open()) {
+            std::cerr << "Failed to open file: " + fileName << std::endl;
+            return;
+        }
+
+        std::string line;
+        std::vector<std::string> userTickets;
+
+        // Read the file line by line
+        while (getline(file, line)) {
+            // Assuming each line represents a record and the user ID is the first part of the line
+            if (line.find(id) == 0) { // Check if the line starts with the user ID
+                userTickets.push_back(line);
+            }
+        }
+
+        file.close();
+
+        // Display all matching records
+        std::cout << "Displaying all tickets for user ID: " << id << std::endl;
+        for (const auto& ticket : userTickets) {
+            std::cout << ticket << std::endl;
+        }
+    }
 };
 
 
@@ -299,7 +270,7 @@ public:
         
         while (true) {
             cout << endl;
-            cout << "deat customer,what can i do for you " << endl;
+            cout << "deal customer,what can i do for you " << endl;
             cout << "enter number to choose function" << endl;
             cout << " 1. view the game and the tickets reservation situation " << endl;
             cout << " 2. book the ticket " << endl;
@@ -307,7 +278,7 @@ public:
             cout << " 4. look your wallet " << endl;
             cout << " 5. exit the system " << endl;
             cout << endl;
-            int a = getValidInt();
+            int a = getValidChoice();
             switch (a) {
             case 1:{
                 Viewing v;
@@ -326,11 +297,11 @@ public:
             }
             case 4: {
                 Wallet wallet(c);
-                wallet.menu();
                 break;
             }
             case 5: {
-                break;
+
+                return ;
             }
             }
         }
