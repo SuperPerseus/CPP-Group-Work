@@ -276,7 +276,7 @@ bool File::savefile() {
                 seatitem = it->second[0];
                 it->second.erase(it->second.begin());
 
-                file << seatitem.matchtime << endl << seatitem.seatgrade << endl << seatitem.gradetotalseat << endl << seatitem.gradetotalseat << endl;
+                file << seatitem.matchtime << endl << seatitem.seatgrade << endl << seatitem.gradetotalseat << endl << seatitem.values.at(seatitem.seatgrade) << endl;
             }
         }
         else {
