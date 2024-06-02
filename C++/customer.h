@@ -74,7 +74,7 @@ public:
 
     // View current balance
     void view() const {
-        std::cout << "Current balance: ¥" << balance << std::endl;
+        std::cout << "your balance: " << balance << std::endl;
     }
 
     // Recharge the balance by asking the user for an amount
@@ -266,33 +266,29 @@ public:
 class Reservation {
 public:
     Reservation(Customer& c) {
-    
-        std::string id = c.returnid();
-        std::string fileName = "tickets.txt"; // Assuming all tickets are stored in this file
-        std::ifstream file(fileName);
-
-        if (!file.is_open()) {
-            std::cerr << "Failed to open file: " + fileName << std::endl;
-            return;
-        }
-
-        std::string line;
-        std::vector<std::string> userTickets;
-
-        // Read the file line by line
-        while (getline(file, line)) {
-            // Assuming each line represents a record and the user ID is the first part of the line
-            if (line.find(id) == 0) { // Check if the line starts with the user ID
-                userTickets.push_back(line);
+        File file;
+        priority_queue<string, vector<string>, timecompare> matchtime;//用比赛时间排序
+        unordered_map<string, vector<ticketinfomation>> id;
+        file.tic.id;
+        for (const auto& match : file.tic.id) {
+            const vector<ticketinfomation>& ticketinfomation = match.second;
+            for (auto& ticket : ticketinfomation) {
+                if (ticket.id == c.returnid()) {
+                    matchtime.push(match.first);
+                    id[match.first].push_back(ticket);
+                }
             }
+
         }
-
-        file.close();
-
-        // Display all matching records
-        std::cout << "Displaying all tickets for user ID: " << id << std::endl;
-        for (const auto& ticket : userTickets) {
-            std::cout << ticket << std::endl;
+        ticketinfomation ticket;
+        while (!matchtime.empty()) {
+            string match = matchtime.top();
+            matchtime.pop();
+            for (auto ticket: id[match]) {
+                cout << endl;
+                cout << "your matchtime is : " << ticket.matchtime << "  your grade is : "<<ticket.seatgrade<< endl <<" your location is : " << ticket.location << " your pay time is ："<<ticket.paytime << endl;
+                cout << endl;
+            }
         }
     
     }
@@ -400,6 +396,7 @@ public:
             }
             case 4: {
                 Wallet wallet(c);
+                wallet.view();
                 break;
             }
             case 5: {
