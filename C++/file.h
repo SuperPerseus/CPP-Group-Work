@@ -147,12 +147,13 @@ bool File::loadseat(fstream &file) {
 
     string matchtime, seatgrade, gradetotalseat, value;
     seatinfomation s;
-
+    bool notheseat = false;
     if (file.is_open()) {
         while (getline(file, matchtime)) {
             getline(file, seatgrade);
             getline(file, gradetotalseat);
             getline(file, value);
+            notheseat = false;
 
             s.matchtime = matchtime;
             s.seatgrade = seatgrade;
@@ -164,8 +165,15 @@ bool File::loadseat(fstream &file) {
                 s.seated[i] = true;
             }
 
-            sea.matchtime.push(matchtime);
-            sea.setseat[matchtime].push_back(s);
+            if (s.gradetotalseat == -1) {
+                notheseat = true;
+            }
+
+            if (notheseat != true) {
+                sea.matchtime.push(matchtime);
+                sea.setseat[matchtime].push_back(s);
+            }
+            
         }
         file.close();
     }

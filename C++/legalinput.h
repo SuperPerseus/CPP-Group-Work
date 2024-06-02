@@ -52,7 +52,7 @@ int getValidInt() {
                 throw std::invalid_argument("Invalid input, please enter a number.");
             }
 
-            if (number <= 0) {
+            if (number < 0) {
                 throw std::out_of_range("Number must be positive, please enter a positive number.");
             }
 
