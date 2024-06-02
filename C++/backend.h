@@ -125,7 +125,7 @@ public:
         cout << "enter seatgrade: ";
         cin >> seatgrade;
 
-        cout << "enter total seats: ";
+        cout << "enter want to delete seats: ";
         gradetotalseats = to_string(getValidInt());
 
        
@@ -149,7 +149,13 @@ public:
                                 cout << "unknowen number,will stop this opertion " << endl;
                                 return;
                             }
-                            seat.gradetotalseat = -1;//connect with file 's loadticket()
+                            if (seat.gradetotalseat >= stoi(gradetotalseats)) {
+                                seat.gradetotalseat = stoi(gradetotalseats);
+                            }
+                            else {
+                                seat.gradetotalseat = -1;
+                            }
+                            //connect with file 's loadticket()
                             break;
                         }
                     }
