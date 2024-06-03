@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "include.h"
-#include "head.h"
+#include "file.h"
+#include "legalinput.h"
+#include "timestamp.h"
 
 using namespace CryptoPP;
 
@@ -62,7 +64,7 @@ public:
     // Reduce the balance by a specified amount if possible
     bool reduce(float amount) {
         if (amount > balance) {
-            std::cout << "Insufficient balance." << std::endl;
+            std::cout << "Insufficient balance. " << std::endl;
             return false;
         }
         else {
@@ -107,6 +109,7 @@ class Payment {
 private:
     int password;
     float paynumber = 0;
+    bool successpay = false;
     Customer c;
 public:
     Payment(float shouldpay, Customer user) :paynumber(shouldpay), c(user) {
@@ -115,8 +118,14 @@ public:
         cout << endl;
         cout << "loading your wallet " << endl;
         Wallet wallet(c);
-        wallet.reduce(price);
-        return true;
+        successpay=wallet.reduce(price);
+        if (successpay == true) {
+            return true;
+        }
+        else {
+            return false;
+        }
+        
     }
 };
 
@@ -216,6 +225,7 @@ public:
                 newt.paytime = returntimestamp();
                 for (auto e : seatsvector) {
                     newt.location = e;
+                    newt.paycost = price;
                     file.tic.matchtime.push(wanttime);
                     file.tic.id[wanttime].push_back(newt);
                 }

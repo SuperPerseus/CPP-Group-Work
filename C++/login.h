@@ -8,7 +8,7 @@ class Login {
 private:
     bool loginsuccess=false;
     bool administratorToken=false;
-
+    std::unordered_map<std::string, std::tuple<std::string, std::string, std::string>> users;
 public:
     User *log,*user;
     Login() {
@@ -46,6 +46,9 @@ public:
     };
     bool returnloginstate() {
         return loginsuccess;
+    }
+    void managermode() {
+        registerUser(users);
     }
 
 
@@ -121,10 +124,10 @@ public:
                 containsAlpha = true;
             }
             if (containsDigit && containsAlpha) {
-                return true; // Found both a digit and an alphabetic character.
+                return true; 
             }
         }
-        return false; // Did not find both a digit and an alphabetic character.
+        return false; 
     }
 
     // Registers a new user after validating password strength
@@ -170,15 +173,26 @@ public:
             cout << "the id no existing,accept" << endl;
             break;
         } while (true);
-
-        do {
-            cout << "enter number to choose usertype \n 1.customer 2.team 3.administer: ";
-            cin >> type;
-            if (stoi(type) == 1 || stoi(type) == 2 || stoi(type) == 3) {
-                break;
-            }
-        } while (true);
-
+        if (administratorToken == false) {
+            do {
+                cout << "enter number to choose usertype \n 1.customer 2.team ";
+                cin >> type;
+                if (stoi(type) == 1 || stoi(type) == 2 ) {
+                    break;
+                }
+                cout << "invalid input " << endl;
+            } while (true);
+        }
+        else if(administratorToken=true){
+            do {
+                cout << "enter number to choose usertype \n 1.customer 2.team 3.administer: ";
+                cin >> type;
+                if (stoi(type) == 1 || stoi(type) == 2 || stoi(type) == 3) {
+                    break;
+                }
+                cout << "invalid input " << endl;
+            } while (true);
+        }       
         string hashedUsername = hashPassword(username);
         string hashedPassword = hashPassword(password);
         users[hashedUsername] = make_tuple(hashedPassword, id, type);
@@ -232,7 +246,6 @@ public:
     }
 
     void leading() {//加一个只有经理登录后，注册才开放23的权限
-        std::unordered_map<std::string, std::tuple<std::string, std::string, std::string>> users;
         if (!loadUsers(users)) {
             cout << "Failed to load user data, exiting.\n";
             exit(1);
@@ -241,6 +254,10 @@ public:
             cout << "Loaded user data successfully.\n";
         }
 
+        cout << endl;
+        cout << "attention ,only the manager login,which the team and manager can register " << endl;
+        cout << "if you use customer or team to login,you cant register new manager with rights of administrators " << endl;
+        cout << endl;
         bool exitProgram = false;
         while (!exitProgram) {
             int option;

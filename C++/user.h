@@ -52,8 +52,8 @@ public:
 
 class Team :public User {
 public:
-    Team(string username, string password, string userType,string teamId)
-        : User(username, password, userType, teamId) {}
+    Team(string username, string password, string userType,string teamname)
+        : User(username, password, userType, teamname) {}
     Team(const User *user) :User(*user) {}
     ~Team() {};
     void view() {};

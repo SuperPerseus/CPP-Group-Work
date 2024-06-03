@@ -1,7 +1,6 @@
-#pragma once
 #include "include.h"
-#include "file.h"
-#include "legalinput.h"
+#include "timestamp.h"
+#include "team.h"
 
 class bkViewing {
 public:
@@ -26,6 +25,46 @@ public:
                 string price = seatinfo.values.at(seatinfo.seatgrade);
 
                 cout << "seatgrade: " << seatinfo.seatgrade << " , can booked total seats: " << available_seats << ", this grade's price: " << price << endl;
+            }
+
+
+
+            cout << endl;
+            cout << endl;
+        }
+
+        for (const auto& ticket : file.tic.id) {
+            const string& matchticket = ticket.first;
+            const vector<ticketinfomation>& ticketinfomation = ticket.second;
+
+            for (const auto& ticketinfo : ticketinfomation) {
+                cout << endl;
+                cout << "ticket matchtime: " << ticketinfo.matchtime <<
+                    " , customers id : " << ticketinfo.id <<
+                    " \n, this ticket seatgrade : " << ticketinfo.seatgrade <<
+                    " , location: " << ticketinfo.location <<
+                    " \n, paytime: " << ticketinfo.paytime <<
+                    " , paycost: " << ticketinfo.paycost << endl;
+
+            }
+
+            cout << endl;
+            cout << endl;
+        }
+
+
+        for (const auto& team : file.tea.team) {
+            const string& matchteam = team.first;
+            const vector<teaminfomation>& teaminfomation = team.second;
+
+            for (const auto& teaminfo : teaminfomation) {
+                cout << endl;
+                cout << "the team 's infomation in this matchtime: " << teaminfo.matchtime <<
+                    " , first team 's name : " << teaminfo.teamname[0] <<
+                    " , second team 's  name : " << teaminfo.teamname[1] <<
+                    " , second team 's  starter  : " << teaminfo.starter <<endl;
+
+                cout << endl;
             }
 
             cout << endl;
@@ -338,14 +377,14 @@ public:
                 return;
             }
             default: {
+                cout << "wrong input " << endl;
                 break;
             }
             }
-        }
-        
-        
+        }        
     }
     SellManagement(Team t) {
+        TeamManagement tm(t);
 
     }
 
@@ -364,7 +403,7 @@ public:
         }
         else {
             Team t(input);
-
+            SellManagement sm(t);
         }
     }
     ~Backend() {};
