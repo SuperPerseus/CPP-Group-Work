@@ -1,6 +1,7 @@
 #pragma once
 #include"head.h"
 #include"include.h"
+#include "backend.h"
 
 int main() {//加登录控制，输入检测
     Login logorregister;
@@ -12,10 +13,29 @@ int main() {//加登录控制，输入检测
             break;
         }
         case 2: {
+
             Backend bk(logorregister.returnuser(), logorregister.returnToken());
             break;
         }           
         case 3: {
+            bool modechoose = false;
+            while (!modechoose) {
+                cout << "if you want to register a new manager ,please enter 1" << endl;
+                cout << "if you want to get in the backend ,please enter 2" << endl;
+                int a = getValidInt();
+                switch (a) {
+                    case 1: {
+                        logorregister.managermode();                        
+                        break;
+                    }
+                    case 2: {
+                        modechoose = true;
+                        break;
+                    }
+                    default:
+                        cout << "invalid input ,try again " << endl;
+                }
+            }           
             Backend bk(logorregister.returnuser(), logorregister.returnToken());
             break;
         }

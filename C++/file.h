@@ -33,7 +33,8 @@ public:
 
 struct teaminfomation {
     string matchtime;
-    string teamid[2];
+    string teamname[2];
+    string starter;
 };
 
 class seats {
@@ -105,11 +106,8 @@ public:
             std::cout << "file save error,exit with error code 103" << endl;
             exit(103);
         }
-        //cout << "save file success" << endl;
+        cout << "save file success" << endl;
     };
-    void print() {
-        std::cout << tic.matchtime.top() << endl;
-    }
     bool loadticket(fstream &file) ;
     bool loadseat(fstream &file) ;
     bool loadteam(fstream &file);
@@ -128,7 +126,6 @@ public:
         if (loadseat(seatsfile)) {
             loadticket(ticketsfile);
             loadteam(teamsfile);
-            print();
             bool yes=savefile();
             cout << endl;
             cout << endl;
@@ -233,15 +230,17 @@ bool File::loadteam(fstream &file) {
 
     string matchtime;
     string team[2];
+    string starter;
     teaminfomation t;
     if (file.is_open()) {
-
         while (getline(file, matchtime)) {
             getline(file, team[0]);
             getline(file, team[1]);
+            getline(file, starter);
             t.matchtime = matchtime;
-            t.teamid[0] = team[0];
-            t.teamid[1] = team[1];
+            t.teamname[0] = team[0];
+            t.teamname[1] = team[1];
+            t.starter = starter;
             tea.matchtime.push(matchtime);
             tea.team[matchtime].push_back(t);
         }
@@ -333,7 +332,7 @@ bool File::savefile() {
                 teamitem = it->second[0];
                 it->second.erase(it->second.begin());
 
-                teamfile << teamitem.matchtime << endl << teamitem.teamid[0] << teamitem.teamid[1] << endl;
+                teamfile << teamitem.matchtime << endl << teamitem.teamname[0] << endl << teamitem.teamname[1] << endl << teamitem.starter << endl;
             }
         }
         else {

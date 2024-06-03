@@ -1,6 +1,5 @@
 #pragma once
 #include"include.h"
-#include"head.h"
 
 #ifdef max
 #undef max
@@ -104,34 +103,6 @@ string getValidTimeString() {
         }
         catch (const invalid_argument& e) {
             cout << e.what() << " Please try again." << endl;
-        }
-    }
-}
-
-
-string getValidPassword() {
-    std::string input;
-    while (true) {
-        try {
-            std::cout << "plase enter your 6 size numbers password: ";
-            std::cin >> input;
-
-            std::regex pattern{ "\\d{6}" };
-            if (!std::regex_match(input, pattern)) {
-                throw std::invalid_argument("Invalid 6 number password.");
-            }
-
-            return input;
-        }
-        catch (const std::invalid_argument& e) {
-            std::cerr << e.what() << std::endl;
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-        catch (const std::out_of_range& e) {
-            std::cerr << "invalid input ,out of 6 size range" << std::endl;
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
 }
