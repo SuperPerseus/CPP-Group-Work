@@ -351,8 +351,6 @@ public:
 
             file.tic.id[matchtime].erase(it);
             cout << "Refund processed for user ID: " << c.returnid() << ". Total refund amount: " << refundTotal << endl;
-
-            // Assuming Wallet is defined and c has a method to access wallet
             Wallet wallet(c);
             wallet.refund(refundTotal);
         }

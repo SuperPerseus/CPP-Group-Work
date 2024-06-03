@@ -4,6 +4,9 @@
 #include "backend.h"
 
 int main() {//¼ÓµÇÂ¼¿ØÖÆ£¬ÊäÈë¼ì²â
+    cout << errorcode << endl;
+    cout << endl;
+    cout << endl;
     Login logorregister;
     
     switch (stoi((logorregister.returnuser())->returntype())) {

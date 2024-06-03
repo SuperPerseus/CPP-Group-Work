@@ -5,6 +5,7 @@
 #include"file.h"
 #include"legalinput.h"
 #include"timestamp.h"
+#include"errorcode.h"
 
 using namespace std;
 
