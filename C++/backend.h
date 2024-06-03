@@ -20,6 +20,7 @@ public:
                 for (const auto& seat : seatinfo.seated) {
                     if (seat.second) {
                         available_seats++;
+                        //cout << available_seats << endl;
                     }
                 }
                 string price = seatinfo.values.at(seatinfo.seatgrade);
@@ -102,8 +103,9 @@ public:
         matchtime = getValidTimeString();
 
         cout << "enter seatgrade: " << endl;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        
         getline(cin, seatgrade);
+
 
         cout << "enter gradetotalseat: " << endl;
         gradetotalseat = getValidInt();
@@ -349,7 +351,6 @@ public:
         cout << "enter the new values: "<<endl;
         values = to_string(getValidInt());
 
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << "enter seatgrade: "<<endl;
         getline(cin, seatgrade);
 

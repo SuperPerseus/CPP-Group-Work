@@ -11,7 +11,7 @@ private:
     Customer c;
     std::fstream file;
     std::string id;
-    float balance;
+    double balance;
     std::string fileName;
 
 public:
@@ -228,6 +228,7 @@ public:
                     newt.paycost = price;
                     file.tic.matchtime.push(wanttime);
                     file.tic.id[wanttime].push_back(newt);
+                    cout << e << endl;
                 }
                 cout << endl;
                 cout << endl;
@@ -280,25 +281,22 @@ public:
         priority_queue<string, vector<string>, timecompare> matchtime;//用比赛时间排序
         unordered_map<string, vector<ticketinfomation>> id;
         file.tic.id;
+        int i = 0;
         for (const auto& match : file.tic.id) {
             const vector<ticketinfomation>& ticketinfomation = match.second;
+            
             for (auto& ticket : ticketinfomation) {
                 if (ticket.id == c.returnid()) {
                     matchtime.push(match.first);
                     id[match.first].push_back(ticket);
+                    for (auto ticket : id[match.first]) {
+                        cout << endl;
+                        cout << "your matchtime is : " << ticket.matchtime << "  your grade is : " << ticket.seatgrade << endl << " your location is : " << ticket.location << " your pay time is ：" << ticket.paytime << endl;
+                        cout << endl;
+                    }
                 }
             }
 
-        }
-        ticketinfomation ticket;
-        while (!matchtime.empty()) {
-            string match = matchtime.top();
-            matchtime.pop();
-            for (auto ticket: id[match]) {
-                cout << endl;
-                cout << "your matchtime is : " << ticket.matchtime << "  your grade is : "<<ticket.seatgrade<< endl <<" your location is : " << ticket.location << " your pay time is ："<<ticket.paytime << endl;
-                cout << endl;
-            }
         }
     
     }
@@ -414,7 +412,7 @@ public:
             case 5: {
                 Wallet wallet(c);
                 wallet.recharge();
-                return ;
+                break ;
             }case 6: {
                 return ;
             }
