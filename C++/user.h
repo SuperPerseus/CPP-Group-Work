@@ -17,8 +17,7 @@ public:
     virtual string returnpassword() { return password; }
     virtual string returntype() { return userType; }
     virtual string returnid() { return 0; }
-    virtual bool login() { return false; }
-    virtual void logout() {}
+
 };
 
 class Customer : public User {
@@ -60,7 +59,7 @@ public:
     string returnname() {
         return username;
     }
-    string returnpassword() {//在这里留待payment和退钱的重新输入密码检验
+    string returnpassword() {
         return password;
     }
     string returntype() {
@@ -82,7 +81,7 @@ public:
         cout << "return name " << endl;
         return username;
     }
-    string returnpassword() {//在这里留待payment和退钱的重新输入密码检验
+    string returnpassword() {
         return password;
     }
     string returntype() {

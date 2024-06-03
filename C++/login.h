@@ -184,7 +184,7 @@ public:
                 cout << "invalid input " << endl;
             } while (true);
         }
-        else if(administratorToken=true){
+        else if(administratorToken==true){
             do {
                 cout << "enter number to choose usertype \n 1.customer 2.team 3.administer: ";
                 cin >> type;

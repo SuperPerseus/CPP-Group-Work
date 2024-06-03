@@ -1,8 +1,4 @@
 2024-06-01 18:00
-New Jersey
-Nagato
-tom,ikun,chickens
-2024-06-02 18:00
-yamato
-shito
+New JerseyNagatoshitobasketball,dance,singtom,ikun,chickens2024-06-02 18:00yamato
 basketball,dance,sing
+tom,ikun,chickens2024-06-02 18:00yamato

@@ -19,7 +19,7 @@ public:
     Wallet(Customer input) : c(input) {
         try {
             id = c.returnid();
-            fileName = id + ".txt";
+            fileName = id ;
 
             // Open the file in read mode to check if it exists and read data
             file.open(fileName, std::ios::in);
@@ -32,7 +32,7 @@ public:
                 balance = 100000;
                 bool update_success = false;
                 update_success = updateFile();
-                if (update_success) {
+                if (!update_success) {
                     throw std::ios_base::failure("File open failed");
                 }
                 
@@ -83,7 +83,7 @@ public:
     void recharge() {
         float amount;
         std::cout << "Enter amount to recharge: ";
-        std::cin >> amount;
+        amount = getValidFloat();
         if (amount < 0) {
             std::cout << "Invalid amount." << std::endl;
         }
@@ -378,11 +378,13 @@ public:
             cout << endl;
             cout << "deal customer,what can i do for you " << endl;
             cout << "enter number to choose function" << endl;
+            
             cout << " 1. view the game and the tickets reservation situation " << endl;
             cout << " 2. book the ticket " << endl;
             cout << " 3. refund the ticket " << endl;
             cout << " 4. look your wallet " << endl;
-            cout << " 5. exit the system " << endl;
+            cout << " 5. Recharge your wallet  " << endl;
+            cout << " 6. exit the system " << endl;
             cout << endl;
             int a = getValidInt() ;
             switch (a) {
@@ -410,6 +412,10 @@ public:
                 break;
             }
             case 5: {
+                Wallet wallet(c);
+                wallet.recharge();
+                return ;
+            }case 6: {
                 return ;
             }
             default: {

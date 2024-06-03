@@ -1,14 +1,14 @@
 #pragma once
 #include"include.h"
 /*
-    ticketfile format: <match_time> id seatgrade location paytime paycost 
-    seatfile format: <match_time> seatgrade[VIP,NORMAL,SUPER,dia,Pt,Au,Ag,Cu,Fe] gradetotalseat[1:] value[] 
-    teamfile format: <match_time> team[0] team[1] 
+    ticketfile format: <match_time> id seatgrade location paytime paycost
+    seatfile format: <match_time> seatgrade[VIP,NORMAL,SUPER,dia,Pt,Au,Ag,Cu,Fe] gradetotalseat[1:] value[]
+    teamfile format: <match_time> team[0] team[1]
 */
 
 struct timecompare {
     bool operator()(const string& a, const string& b) {
-        return a > b; 
+        return a > b;
     }
 };
 
@@ -28,7 +28,7 @@ public:
     string seatgrade;
     int location;
     string paytime;
-    float paycost=0;
+    int paycost = 0;
 };
 
 struct teaminfomation {
@@ -45,7 +45,7 @@ public:
 
 class tickets {
 public:
-    priority_queue<string, vector<string>,timecompare> matchtime;//用比赛时间排序
+    priority_queue<string, vector<string>, timecompare> matchtime;//用比赛时间排序
     unordered_map<string, vector<ticketinfomation>> id;//用比赛时间搜索关联下的所有票务信息
 };
 
@@ -101,18 +101,21 @@ public:
         }
     };
     ~File() {
-        bool successsave=savefile();
+        bool successsave = savefile();
         if (successsave != true) {
             std::cout << "file save error,exit with error code 103" << endl;
             exit(103);
         }
-        cout << "save file success" << endl;
+        //cout << "save file success" << endl;
     };
-    bool loadticket(fstream &file) ;
-    bool loadseat(fstream &file) ;
-    bool loadteam(fstream &file);
+    void print() {
+        std::cout << tic.matchtime.top() << endl;
+    }
+    bool loadticket(fstream& file);
+    bool loadseat(fstream& file);
+    bool loadteam(fstream& file);
     bool savefile();
-    void loadorcreate(fstream& file,string filename) {
+    void loadorcreate(fstream& file, string filename) {
         if (!file.is_open()) {
             std::cout << "does not exist, creating it.\n";
             file.open(filename, fstream::out);
@@ -122,11 +125,12 @@ public:
         }
     }
 
-    void init(fstream &seatsfile, fstream &ticketsfile, fstream &teamsfile) {
+    void init(fstream& seatsfile, fstream& ticketsfile, fstream& teamsfile) {
         if (loadseat(seatsfile)) {
             loadticket(ticketsfile);
             loadteam(teamsfile);
-            bool yes=savefile();
+            print();
+            bool yes = savefile();
             cout << endl;
             cout << endl;
         }
@@ -139,7 +143,7 @@ public:
 
 };
 
-bool File::loadseat(fstream &file) {
+bool File::loadseat(fstream& file) {
 
 
     string matchtime, seatgrade, gradetotalseat, value;
@@ -170,7 +174,7 @@ bool File::loadseat(fstream &file) {
                 sea.matchtime.push(matchtime);
                 sea.setseat[matchtime].push_back(s);
             }
-            
+
         }
         file.close();
     }
@@ -181,9 +185,8 @@ bool File::loadseat(fstream &file) {
     return true;
 }
 
-bool File::loadticket(fstream &file) {
+bool File::loadticket(fstream& file) {
     bool notheseat = false;
-    bool validmatchtime = false;
     string matchtime, id, seatgrade, location, paytime, paycost;
     ticketinfomation t;
     if (file.is_open()) {
@@ -200,13 +203,6 @@ bool File::loadticket(fstream &file) {
             t.location = stoi(location);
             t.paytime = paytime;
             t.paycost = stoi(paycost);
-
-            for (auto& s : sea.setseat[matchtime]) {
-                if (s.matchtime == matchtime) {
-                    validmatchtime = true;
-                    break;
-                }
-            }
             for (auto& s : sea.setseat[matchtime]) {//检查比赛时间合不合法
                 if (s.seatgrade == seatgrade) {
                     if (s.gradetotalseat == -1) {
@@ -216,13 +212,15 @@ bool File::loadticket(fstream &file) {
                     break;
                 }
             }
-            if ((notheseat != true) && (validmatchtime == true)) {
+            if (notheseat != true) {
                 tic.matchtime.push(matchtime);
                 tic.id[matchtime].push_back(t);
-                }
-           
-            file.close();
+            }
+
+
+
         }
+        file.close();
     }
     else {
         return false;
@@ -231,28 +229,20 @@ bool File::loadticket(fstream &file) {
     return true;
 }
 
-bool File::loadteam(fstream &file) {
-    bool validmatchtime = false;
+bool File::loadteam(fstream& file) {
+
 
     string matchtime;
     string team[2];
-    string starter;
     teaminfomation t;
     if (file.is_open()) {
+
         while (getline(file, matchtime)) {
             getline(file, team[0]);
             getline(file, team[1]);
-            getline(file, starter);
-            for (auto& s : sea.setseat[matchtime]) {
-                if (s.matchtime == matchtime) {
-                    validmatchtime = true;
-                    break;
-                }
-            }
             t.matchtime = matchtime;
             t.teamname[0] = team[0];
             t.teamname[1] = team[1];
-            t.starter = starter;
             tea.matchtime.push(matchtime);
             tea.team[matchtime].push_back(t);
         }
@@ -267,10 +257,10 @@ bool File::loadteam(fstream &file) {
 }
 
 bool File::savefile() {
-    seats outseat=sea;
-    tickets outticket=tic;
-    teams outteam=tea;
-    bool writeseat = false, writeticket = false, writeteam=false;
+    seats outseat = sea;
+    tickets outticket = tic;
+    teams outteam = tea;
+    bool writeseat = false, writeticket = false, writeteam = false;
     ofstream file("seats.txt", ios::out | ios::trunc);
     if (!file.is_open()) {
         cerr << "Failed to open seats.txt for appending.\n";
@@ -279,7 +269,7 @@ bool File::savefile() {
     string time;
     seatinfomation seatitem;
     while (!outseat.matchtime.empty()) {
-        time=outseat.matchtime.top();
+        time = outseat.matchtime.top();
         outseat.matchtime.pop();
         auto it = outseat.setseat.find(time);
         if (it != outseat.setseat.end()) {
@@ -315,7 +305,7 @@ bool File::savefile() {
                 ticketitem = it->second[0];
                 it->second.erase(it->second.begin());
 
-                ticketfile << ticketitem.matchtime << endl << ticketitem.id << endl << ticketitem.seatgrade << endl << ticketitem.location << endl<< ticketitem.paytime<<endl<< ticketitem.paycost<<endl;
+                ticketfile << ticketitem.matchtime << endl << ticketitem.id << endl << ticketitem.seatgrade << endl << ticketitem.location << endl << ticketitem.paytime << endl << ticketitem.paycost << endl;
             }
         }
         else {
@@ -344,7 +334,7 @@ bool File::savefile() {
                 teamitem = it->second[0];
                 it->second.erase(it->second.begin());
 
-                teamfile << teamitem.matchtime << endl << teamitem.teamname[0] << endl << teamitem.teamname[1] << endl << teamitem.starter << endl;
+                teamfile << teamitem.matchtime << endl << teamitem.teamname[0] << teamitem.teamname[1] << endl;
             }
         }
         else {
