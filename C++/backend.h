@@ -102,6 +102,7 @@ public:
         matchtime = getValidTimeString();
 
         cout << "enter seatgrade: " << endl;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         getline(cin, seatgrade);
 
         cout << "enter gradetotalseat: " << endl;
@@ -159,6 +160,7 @@ public:
         matchtime = getValidTimeString();
 
         cout << "enter seatgrade: ";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         getline(cin, seatgrade);
 
         cout << "enter the grade total seats : ";
@@ -220,6 +222,7 @@ public:
         matchtime = getValidTimeString();
 
         cout << "enter seatgrade: ";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         getline(cin, seatgrade);
 
         cout << "enter want to delete seats: ";
@@ -285,6 +288,7 @@ public:
         matchtime = getValidTimeString();
 
         cout << "enter seatgrade: " << endl;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         getline(cin, seatgrade);
 
         cout << "enter gradetotalseat: " << endl;
@@ -345,6 +349,7 @@ public:
         cout << "enter the new values: "<<endl;
         values = to_string(getValidInt());
 
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << "enter seatgrade: "<<endl;
         getline(cin, seatgrade);
 

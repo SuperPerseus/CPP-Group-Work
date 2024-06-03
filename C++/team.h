@@ -14,12 +14,15 @@ public:
         matchtime = getValidTimeString();
 
         cout << "enter the first teamname : " << endl;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         getline(cin, teamname[0]);
 
         cout << "enter the second teamname : " << endl;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         getline(cin, teamname[1]);
 
         cout << "enter your team's starter ,you must enter in one line: " << endl;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         getline(cin, starter);
 
         bool exised = false;
@@ -114,12 +117,15 @@ public:
             matchtime = getValidTimeString();
 
             cout << "enter the new first teamname : " << endl;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             getline(cin, teamname[0]);
 
             cout << "enter the new second teamname : " << endl;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             getline(cin, teamname[1]);
 
             cout << "enter the new team's starter : " << endl;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             getline(cin, starter);
 
 
@@ -147,7 +153,7 @@ public:
             cout << endl;
             cout << "Deal team coach ,this is the teambackend  " << endl;
             cout << "enter number to choose function" << endl;
-            cout << " 1.Enter your team and match information  " << endl;
+            cout << " 1. insert your team and match information  " << endl;
             cout << " 2. viewing the match time and Opposite team " << endl;
             cout << " 3. rename your team name  " << endl;
             cout << " 4. exit the system " << endl;
