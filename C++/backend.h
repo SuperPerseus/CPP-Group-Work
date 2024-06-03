@@ -60,9 +60,9 @@ public:
             for (const auto& teaminfo : teaminfomation) {
                 cout << endl;
                 cout << "the team 's infomation in this matchtime: " << teaminfo.matchtime <<
-                    " , first team 's name : " << teaminfo.teamname[0] <<
-                    " , second team 's  name : " << teaminfo.teamname[1] <<
-                    " , second team 's  starter  : " << teaminfo.starter <<endl;
+                    " ,\n first team 's name : " << teaminfo.teamname[0] <<
+                    " , \nsecond team 's  name : " << teaminfo.teamname[1] <<
+                    " , \nsecond team 's  starter  : " << teaminfo.starter <<endl;
 
                 cout << endl;
             }
@@ -77,7 +77,7 @@ public:
 class Notify {
 public:
     Notify() {
-        cout << "if want exit ,push any keyboard " << endl;
+        cout << " if want exit ,push any keyboard " << endl;
         bkViewing v;
         while (true) {           
             v.view();
