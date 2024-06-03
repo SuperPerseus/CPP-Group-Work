@@ -1,6 +1,7 @@
 #pragma once
 #include "user.h"
 #include "include.h"
+#include "legalinput.h"
 
 using namespace std;
 
@@ -262,7 +263,7 @@ public:
         while (!exitProgram) {
             int option;
             cout << "1: Register\n2: Login\n0: Exit\nEnter option: ";
-            cin >> option;
+            option= getValidInt();
             switch (option) {
             case 1:
                 registerUser(users);

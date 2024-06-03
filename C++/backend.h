@@ -91,6 +91,64 @@ public:
     ~Notify() {};
 };
 
+class InsertNewMatch {
+public:
+    InsertNewMatch(){
+        File file;
+        string matchtime, seatgrade, value;
+        int gradetotalseat;
+        seatinfomation s;
+        cout << "enter the matchtime : " << endl;
+        matchtime = getValidTimeString();
+
+        cout << "enter seatgrade: " << endl;
+        getline(cin, seatgrade);
+
+        cout << "enter gradetotalseat: " << endl;
+        gradetotalseat = getValidInt();
+
+        cout << "enter value : " << endl;
+        value = to_string(getValidFloat());
+
+        auto it = file.sea.setseat.find(matchtime);
+        if (it == file.sea.setseat.end()) {
+            cout << "no matchtime is existed ,you can insert new one " << endl;
+            cout << "if you want stop the danger opertion ,please put 0. if you want continue,enter the 1" << endl;
+            int Dangerous_operation = getValidInt();
+            switch (Dangerous_operation) {
+            case 1:
+                break;
+            case 0:
+                return;
+            default:
+                cout << "unknowen number,will stop this opertion " << endl;
+                return;
+            }
+            s.matchtime = matchtime;
+            s.seatgrade = seatgrade;
+            s.gradetotalseat = gradetotalseat;
+            s.values[seatgrade] = value;
+
+            file.sea.matchtime.push(matchtime);
+            file.sea.setseat[matchtime].push_back(s);
+
+            cout << endl;
+            cout << "success" << endl;
+            cout << endl;
+            file.savefile();
+        }
+        else {
+            cout << "the matchtime is existed ,delete game time is banned " << endl;
+        }
+
+    }
+
+    ~InsertNewMatch() {
+
+
+    }
+};
+
 class SeatAdd {
 public:
     SeatAdd() {
@@ -101,7 +159,7 @@ public:
         matchtime = getValidTimeString();
 
         cout << "enter seatgrade: ";
-        cin >> seatgrade;
+        getline(cin, seatgrade);
 
         cout << "enter the grade total seats : ";
         gradetotalseats=to_string(getValidInt());
@@ -162,7 +220,7 @@ public:
         matchtime = getValidTimeString();
 
         cout << "enter seatgrade: ";
-        cin >> seatgrade;
+        getline(cin, seatgrade);
 
         cout << "enter want to delete seats: ";
         gradetotalseats = to_string(getValidInt());
@@ -227,7 +285,7 @@ public:
         matchtime = getValidTimeString();
 
         cout << "enter seatgrade: " << endl;
-        cin >> seatgrade;
+        getline(cin, seatgrade);
 
         cout << "enter gradetotalseat: " << endl;
         gradetotalseat= getValidInt();
@@ -288,7 +346,7 @@ public:
         values = to_string(getValidInt());
 
         cout << "enter seatgrade: "<<endl;
-        cin >> seatgrade;
+        getline(cin, seatgrade);
 
         auto it = file.sea.setseat.find(matchtime);
         if (it != file.sea.setseat.end()) {
@@ -338,42 +396,50 @@ public:
             cout << endl;
             cout << "deal manager,this is the backend  " << endl;
             cout << "enter number to choose function" << endl;
-            cout << " 1. add seat  " << endl;
-            cout << " 2. update price  " << endl;
-            cout << " 3. add new grade  " << endl;
-            cout << " 4. notify mode  " << endl;
-            cout << " 5. seat delete  " << endl;
-            cout << " 6. viewing the now seats and match  " << endl;
-            cout << " 7. exit the system " << endl;
+            cout << endl;
+            cout << "attention , the matchtime is cannot be changed" << endl;
+            cout << "To avoid irritating customers,you can only to add price or total seats "<< endl;
+            cout << endl;
+            cout << " 1.insert new matchtime " << endl;
+            cout << " 2. add seat  " << endl;
+            cout << " 3. update price  " << endl;
+            cout << " 4. add new grade  " << endl;
+            cout << " 5. notify mode  " << endl;
+            cout << " 6. seat delete  " << endl;
+            cout << " 7. viewing the now seats and match  " << endl;
+            cout << " 8. exit the system " << endl;
             cout << endl;
             int a = getValidInt();
             switch (a) {
             case 1: {
+                InsertNewMatch inm;
+                break;
+            }case 2: {
                 SeatAdd sa;
                 break;
             }
-            case 2: {
+            case 3: {
                 Update up;
                 break;
             }
-            case 3: {
+            case 4: {
                 GradeAdd ga;
                 break;
             }
-            case 4: {
+            case 5: {
                 Notify no;
                 break;
             }
-            case 5: {
+            case 6: {
                 SeatDelete sd;
                 break;
             }
-            case 6: {
+            case 7: {
                 bkViewing bk;
                 bk.view();
                 break;
             }
-            case 7: {
+            case 8: {
                 return;
             }
             default: {

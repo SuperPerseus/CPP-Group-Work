@@ -114,13 +114,13 @@ public:
             matchtime = getValidTimeString();
 
             cout << "enter the new first teamname : " << endl;
-            cin >> teamname[0];
+            getline(cin, teamname[0]);
 
             cout << "enter the new second teamname : " << endl;
-            cin >> teamname[1];
+            getline(cin, teamname[1]);
 
             cout << "enter the new team's starter : " << endl;
-            cin >> starter;
+            getline(cin, starter);
 
 
             t.matchtime = matchtime;

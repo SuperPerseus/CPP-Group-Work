@@ -9,47 +9,28 @@
 #undef min
 #endif
 
-int getValidChoice() {//加个价格设置有效检验
-    int choice;
-    while (true) {
-        try {
-            cout << "please enter : ";
-            cin >> choice;
-
-            if (cin.fail()) {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                throw invalid_argument("Invalid input, please enter a number.");
-            }
-
-            if (choice < 1 || choice > 5) {
-                throw out_of_range("Choice out of range, please enter a number between 1 and 5.");
-            }
-
-            return choice;
-
-        }
-        catch (const invalid_argument& e) {
-            cerr << e.what() << endl;
-        }
-        catch (const out_of_range& e) {
-            cerr << e.what() << endl;
-        }
-    }
-}
-
 int getValidInt() {
     int number;
+    std::string input;
     while (true) {
         try {
             std::cout << "Please enter a positive number: ";
-            std::cin >> number;
+            std::cin >> input;
 
-            if (std::cin.fail()) {
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            // Check if input contains only digits
+            bool isAllDigits = true;
+            for (char c : input) {
+                if (!std::isdigit(c)) {
+                    isAllDigits = false;
+                    break;
+                }
+            }
+
+            if (!isAllDigits) {
                 throw std::invalid_argument("Invalid input, please enter a number.");
             }
+
+            number = std::stoi(input);
 
             if (number < 0) {
                 throw std::out_of_range("Number must be positive, please enter a positive number.");
@@ -60,6 +41,8 @@ int getValidInt() {
         }
         catch (const std::invalid_argument& e) {
             std::cerr << e.what() << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         catch (const std::out_of_range& e) {
             std::cerr << e.what() << std::endl;
@@ -110,16 +93,34 @@ string getValidTimeString() {
 
 float getValidFloat() {
     float number;
+    std::string input;
     while (true) {
         try {
             std::cout << "Please enter a float number greater than or equal to 0: ";
-            std::cin >> number;
+            std::cin >> input;
 
-            if (std::cin.fail()) {
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            // Check if input is a valid float
+            bool validFloat = true;
+            bool decimalPointSeen = false;
+            for (size_t i = 0; i < input.length(); i++) {
+                if (!isdigit(input[i]) && input[i] != '.' && !(i == 0 && input[i] == '-')) {
+                    validFloat = false;
+                    break;
+                }
+                if (input[i] == '.') {
+                    if (decimalPointSeen) {
+                        validFloat = false; // Multiple decimal points are not allowed
+                        break;
+                    }
+                    decimalPointSeen = true;
+                }
+            }
+
+            if (!validFloat) {
                 throw std::invalid_argument("Invalid input, please enter a float number.");
             }
+
+            number = std::stof(input);
 
             if (number < 0) {
                 throw std::out_of_range("Number must be greater than or equal to 0, please enter a valid float number.");
@@ -130,6 +131,8 @@ float getValidFloat() {
         }
         catch (const std::invalid_argument& e) {
             std::cerr << e.what() << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         catch (const std::out_of_range& e) {
             std::cerr << e.what() << std::endl;

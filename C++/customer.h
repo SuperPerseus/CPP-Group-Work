@@ -384,7 +384,7 @@ public:
             cout << " 4. look your wallet " << endl;
             cout << " 5. exit the system " << endl;
             cout << endl;
-            int a = getValidChoice();
+            int a = getValidInt() ;
             switch (a) {
             case 1:{
                 Viewing v;
@@ -412,6 +412,10 @@ public:
             case 5: {
                 return ;
             }
+            default: {
+                cout << "wrong input ,try again " << endl;
+            }
+
             }
         }
     }

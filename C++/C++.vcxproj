@@ -24,6 +24,7 @@
     <ProjectGuid>{5e5e993b-4430-4414-88d4-8ba4f2d0c577}</ProjectGuid>
     <RootNamespace>C</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Stadium Seat Booking System</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

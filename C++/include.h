@@ -26,4 +26,8 @@
 #include <chrono>
 #include <thread>
 #include <conio.h>
+#include <limits>
+#include <cctype>
+
+using namespace std;
 

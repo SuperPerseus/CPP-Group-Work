@@ -28,7 +28,7 @@ public:
     string seatgrade;
     int location;
     string paytime;
-    int paycost=0;
+    float paycost=0;
 };
 
 struct teaminfomation {
@@ -183,6 +183,7 @@ bool File::loadseat(fstream &file) {
 
 bool File::loadticket(fstream &file) {
     bool notheseat = false;
+    bool validmatchtime = false;
     string matchtime, id, seatgrade, location, paytime, paycost;
     ticketinfomation t;
     if (file.is_open()) {
@@ -199,6 +200,13 @@ bool File::loadticket(fstream &file) {
             t.location = stoi(location);
             t.paytime = paytime;
             t.paycost = stoi(paycost);
+
+            for (auto& s : sea.setseat[matchtime]) {
+                if (s.matchtime == matchtime) {
+                    validmatchtime = true;
+                    break;
+                }
+            }
             for (auto& s : sea.setseat[matchtime]) {//检查比赛时间合不合法
                 if (s.seatgrade == seatgrade) {
                     if (s.gradetotalseat == -1) {
@@ -208,15 +216,13 @@ bool File::loadticket(fstream &file) {
                     break;
                 }
             }
-            if (notheseat != true) {
+            if ((notheseat != true) && (validmatchtime == true)) {
                 tic.matchtime.push(matchtime);
                 tic.id[matchtime].push_back(t);
-            }
-            
-
-            
+                }
+           
+            file.close();
         }
-        file.close();
     }
     else {
         return false;
@@ -226,7 +232,7 @@ bool File::loadticket(fstream &file) {
 }
 
 bool File::loadteam(fstream &file) {
-
+    bool validmatchtime = false;
 
     string matchtime;
     string team[2];
@@ -237,6 +243,12 @@ bool File::loadteam(fstream &file) {
             getline(file, team[0]);
             getline(file, team[1]);
             getline(file, starter);
+            for (auto& s : sea.setseat[matchtime]) {
+                if (s.matchtime == matchtime) {
+                    validmatchtime = true;
+                    break;
+                }
+            }
             t.matchtime = matchtime;
             t.teamname[0] = team[0];
             t.teamname[1] = team[1];
