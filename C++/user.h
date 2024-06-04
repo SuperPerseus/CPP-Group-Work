@@ -18,6 +18,7 @@ public:
     virtual string returntype() { return userType; }
     virtual string returnid() { return 0; }
 
+
 };
 
 class Customer : public User {
