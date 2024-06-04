@@ -151,7 +151,7 @@ public:
     TeamManagement(Team t) {
         while (true) {
             cout << endl;
-            cout << "Deal team coach ,this is the teambackend  " << endl;
+            cout << "Dear team coach ,this is the teambackend  " << endl;
             cout << "enter number to choose function" << endl;
             cout << " 1. insert your team and match information  " << endl;
             cout << " 2. viewing the match time and Opposite team " << endl;

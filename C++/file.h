@@ -28,7 +28,7 @@ public:
     string seatgrade;
     int location;
     string paytime;
-    int paycost = 0;
+    float paycost = 0;
 };
 
 struct teaminfomation {

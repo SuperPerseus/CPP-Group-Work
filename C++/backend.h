@@ -400,7 +400,7 @@ public:
     SellManagement(Manager m) {
         while (true) {
             cout << endl;
-            cout << "deal manager,this is the backend  " << endl;
+            cout << "Dear manager,this is the backend  " << endl;
             cout << "enter number to choose function" << endl;
             cout << endl;
             cout << "attention , the matchtime is cannot be changed" << endl;

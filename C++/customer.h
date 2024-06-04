@@ -372,7 +372,7 @@ public:
         
         while (true) {
             cout << endl;
-            cout << "deal customer,what can i do for you " << endl;
+            cout << "Dear customer,what can i do for you " << endl;
             cout << "enter number to choose function" << endl;
             
             cout << " 1. view the game and the tickets reservation situation " << endl;

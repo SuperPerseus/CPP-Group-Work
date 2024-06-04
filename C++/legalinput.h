@@ -12,37 +12,32 @@
 int getValidInt() {
     int number;
     std::string input;
+
     while (true) {
         try {
             std::cout << "Please enter a positive number: ";
-            std::cin >> input;
+            std::getline(std::cin, input);  // 使用getline获取整行输入
 
-            // Check if input contains only digits
-            bool isAllDigits = true;
-            for (char c : input) {
-                if (!std::isdigit(c)) {
-                    isAllDigits = false;
-                    break;
-                }
-            }
-
-            if (!isAllDigits) {
+            std::istringstream stream(input);
+            std::string temp;
+            if (!(stream >> number)) {  // 尝试从输入流中读取一个整数
                 throw std::invalid_argument("Invalid input, please enter a number.");
             }
 
-            number = std::stoi(input);
+            if (stream >> temp) {  // 检查是否还有更多数据
+                throw std::invalid_argument("Invalid input, only a single positive number is allowed.");
+            }
 
             if (number < 0) {
                 throw std::out_of_range("Number must be positive, please enter a positive number.");
             }
 
-            return number;
+            return number;  // 成功获取到有效整数，返回它
 
         }
         catch (const std::invalid_argument& e) {
             std::cerr << e.what() << std::endl;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         catch (const std::out_of_range& e) {
             std::cerr << e.what() << std::endl;
@@ -97,45 +92,38 @@ float getValidFloat() {
     while (true) {
         try {
             std::cout << "Please enter a float number greater than or equal to 0: ";
-            std::cin >> input;
+            std::getline(std::cin, input); // 使用getline获取整行输入
 
-            // Check if input is a valid float
-            bool validFloat = true;
-            bool decimalPointSeen = false;
-            for (size_t i = 0; i < input.length(); i++) {
-                if (!isdigit(input[i]) && input[i] != '.' && !(i == 0 && input[i] == '-')) {
-                    validFloat = false;
-                    break;
-                }
-                if (input[i] == '.') {
-                    if (decimalPointSeen) {
-                        validFloat = false; // Multiple decimal points are not allowed
-                        break;
-                    }
-                    decimalPointSeen = true;
-                }
-            }
-
-            if (!validFloat) {
+            std::istringstream stream(input);
+            std::string temp;
+            if (!(stream >> number)) {  // 尝试从输入流中读取一个浮点数
                 throw std::invalid_argument("Invalid input, please enter a float number.");
             }
 
-            number = std::stof(input);
+            if (stream >> temp) {  // 检查是否还有更多数据
+                throw std::invalid_argument("Invalid input, only a single float number is allowed.");
+            }
 
             if (number < 0) {
                 throw std::out_of_range("Number must be greater than or equal to 0, please enter a valid float number.");
             }
 
-            return number;
+            return number;  // 成功获取到有效浮点数，返回它
 
         }
         catch (const std::invalid_argument& e) {
             std::cerr << e.what() << std::endl;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         catch (const std::out_of_range& e) {
             std::cerr << e.what() << std::endl;
         }
     }
+}
+
+string getCompleteLine() {
+    std::string input;
+    std::cout << "Please enter a line of text: ";
+    std::getline(std::cin, input);  // 使用 getline 来读取整行，包括空格和任何特殊字符
+    return input;
 }

@@ -7,22 +7,22 @@ using namespace std;
 
 class Login {
 private:
-    bool loginsuccess=false;
-    bool administratorToken=false;
-    std::unordered_map<std::string, std::tuple<std::string, std::string, std::string>> users;
+    bool loginsuccess = false;
+    bool administratorToken = false;
+
 public:
-    User *log,*user;
+    User* log, * user;
     Login() {
         leading();
     };
-    ~Login(){}
+    ~Login() {}
     void success() {
         loginsuccess = true;
     }
     void tokencheck() {//再加入一个用户名SHA加分别加上id和type的SHA来保密，防止权限泄露
         administratorToken = true;
     }
-    void userload(string username,string password,string id,string type ) {
+    void userload(string username, string password, string id, string type) {
         if (stoi(type) == 1) {
             user = new Customer(username, password, type, id);
 
@@ -38,7 +38,7 @@ public:
             exit(100);
         }
     }
-    User *returnuser() {
+    User* returnuser() {
         log = user;
         return log;
     };
@@ -49,6 +49,8 @@ public:
         return loginsuccess;
     }
     void managermode() {
+        std::unordered_map<std::string, std::tuple<std::string, std::string, std::string>> users;
+        loadUsers(users);
         registerUser(users);
     }
 
@@ -125,10 +127,10 @@ public:
                 containsAlpha = true;
             }
             if (containsDigit && containsAlpha) {
-                return true; 
+                return true; // Found both a digit and an alphabetic character.
             }
         }
-        return false; 
+        return false; // Did not find both a digit and an alphabetic character.
     }
 
     // Registers a new user after validating password strength
@@ -153,7 +155,7 @@ public:
                 break; // Valid password, exit loop.
             }
         } while (true);
-        bool idcheck=true;
+        bool idcheck = true;
         do {
             while (idcheck == true) {
                 cout << "Enter your id: ";
@@ -174,26 +176,27 @@ public:
             cout << "the id no existing,accept" << endl;
             break;
         } while (true);
+        int numbertype = 0;
         if (administratorToken == false) {
             do {
-                cout << "enter number to choose usertype \n 1.customer 2.team ";
-                cin >> type;
-                if (stoi(type) == 1 || stoi(type) == 2 ) {
+                cout << "enter number to choose usertype \n 1.customer 2.team  ";
+                numbertype = getValidInt();
+                if (numbertype == 1 || numbertype == 2 ) {
                     break;
                 }
-                cout << "invalid input " << endl;
             } while (true);
         }
-        else if(administratorToken==true){
+        else {
             do {
                 cout << "enter number to choose usertype \n 1.customer 2.team 3.administer: ";
-                cin >> type;
-                if (stoi(type) == 1 || stoi(type) == 2 || stoi(type) == 3) {
+                numbertype = getValidInt();
+                if (numbertype == 1 || numbertype == 2 || numbertype == 3) {
                     break;
                 }
-                cout << "invalid input " << endl;
             } while (true);
-        }       
+        }
+        
+        type = to_string(numbertype);
         string hashedUsername = hashPassword(username);
         string hashedPassword = hashPassword(password);
         users[hashedUsername] = make_tuple(hashedPassword, id, type);
@@ -231,7 +234,7 @@ public:
         }
         cout << "Logged in successfully!\n";
         success();
-        userload(username, password, get<1>(it->second),get<2>(it->second));
+        userload(username, password, get<1>(it->second), get<2>(it->second));
         cout << "Your privilege is " << std::get<2>(it->second) << ".\n";
         if (stoi(std::get<2>(it->second)) == 1) {
             cout << "Your grade is customer.\n";
@@ -247,6 +250,7 @@ public:
     }
 
     void leading() {//加一个只有经理登录后，注册才开放23的权限
+        std::unordered_map<std::string, std::tuple<std::string, std::string, std::string>> users;
         if (!loadUsers(users)) {
             cout << "Failed to load user data, exiting.\n";
             exit(1);
@@ -255,15 +259,11 @@ public:
             cout << "Loaded user data successfully.\n";
         }
 
-        cout << endl;
-        cout << "attention ,only the manager login,which the team and manager can register " << endl;
-        cout << "if you use customer or team to login,you cant register new manager with rights of administrators " << endl;
-        cout << endl;
         bool exitProgram = false;
         while (!exitProgram) {
             int option;
             cout << "1: Register\n2: Login\n0: Exit\nEnter option: ";
-            option= getValidInt();
+            option=getValidInt();
             switch (option) {
             case 1:
                 registerUser(users);
